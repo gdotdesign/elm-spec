@@ -82,4 +82,5 @@ main =
     { init = init
     , update = update
     , view = view
+    , subscriptions = \_ -> Sub.none
     } specs

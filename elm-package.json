@@ -9,7 +9,9 @@
     "spec"
   ],
   "exposed-modules": [
+    "Spec.Assertions",
     "Spec.Native",
+    "Spec.Runner",
     "Spec.Steps",
     "Spec"
   ],

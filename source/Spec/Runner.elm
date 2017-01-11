@@ -1,15 +1,20 @@
-port module Spec.Runner exposing (..)
+port module Spec.Runner exposing
+  ( run
+  , runWithProgram
+  )
 
+{-| This module runs the tests with or without an app.
+
+@docs run, runWithProgram
+-}
 import Spec.Types exposing (Outcome(..), Assertion)
+import Spec exposing (Test, Node)
+import Spec.Reporter
 import Spec.Steps
-import Spec exposing (Test)
-import Spec.Styles as Styles exposing (stylesheet)
 
 import Task
-import Json.Encode
 
-import Html.Attributes exposing (style, property)
-import Html exposing (div, strong, text)
+import Html
 
 type alias State a msg =
   { tests : List Test
@@ -71,6 +76,9 @@ runCmd tests =
       perform (Next Nothing)
     [] -> elmSpecReport []
 
+{-| Runs the given tests without an app / component.
+-}
+run : Node -> Program Never (State String msg) (Msg msg)
 run tests =
   let
     tests_ =
@@ -82,12 +90,14 @@ run tests =
       , subscriptions = (\_ -> Sub.none)
       , view = \model ->
         if List.isEmpty model.tests then
-          Html.div [ stylesheet.class Styles.Container ]
-            (renderResults model.finishedTests)
+          Spec.Reporter.render model.finishedTests
         else
-          Html.text ""
+          Html.map App (model.view model.app)
       }
 
+{-| Runs the given tests with the given app / component.
+-}
+runWithProgram : { init : model, update : msg -> model -> (model, Cmd msg), subscriptions : model -> Sub msg, view : model -> Html.Html msg } -> Node -> Program Never (State model msg) (Msg msg)
 runWithProgram data tests =
   let
     tests_ =
@@ -96,44 +106,13 @@ runWithProgram data tests =
     Html.program
       { init = ({ app = data.init, update = data.update, view = data.view, tests = tests_, finishedTests = [] }, runCmd tests_)
       , update = update
-      , subscriptions = (\_ -> Sub.none)
+      , subscriptions = (\model -> Sub.map App (data.subscriptions model.app))
       , view = \model ->
         if List.isEmpty model.tests then
-          Html.div [ stylesheet.class Styles.Container ]
-            ([ Styles.embed] ++ (renderResults model.finishedTests))
+          Spec.Reporter.render model.finishedTests
         else
           Html.map App (model.view model.app)
       }
-
-renderTest model =
-  let
-    renderLine result =
-      let
-        teststyle =
-          case result of
-            Pass _ -> style [("color", "green")]
-            Error _ -> style [("color", "white"), ("background-color", "red")]
-            Fail _ -> style [("color", "red")]
-      in
-        div
-        [ teststyle
-        , stylesheet.class Styles.Test
-        , property "innerHTML" (Json.Encode.string (Native.Spec.ansiToHtml (stepToString result)))
-        ] []
-  in
-    div [ stylesheet.class Styles.Row ]
-      ([ strong [] [ text model.name ]
-      ] ++ (List.map renderLine model.results ))
-
-stepToString result =
-  case result of
-    Pass message -> message
-    Fail message -> message
-    Error message -> message
-
-renderResults tests =
-  List.map renderTest tests
-
 
 type alias TestResult =
   { results : List { outcome : String, message : String }
