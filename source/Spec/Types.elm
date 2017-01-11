@@ -5,6 +5,8 @@ import Task exposing (Task)
 type alias Assertion
   = Task Never Outcome
 
+type alias Step = Assertion
+
 type Outcome
   = Error String
   | Fail String

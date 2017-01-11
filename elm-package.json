@@ -8,8 +8,13 @@
     "source",
     "spec"
   ],
-  "exposed-modules": [],
+  "exposed-modules": [
+    "Spec.Native",
+    "Spec.Steps",
+    "Spec"
+  ],
   "dependencies": {
+    "mdgriffith/style-elements": "2.0.1 <= v < 3.0.0",
     "elm-lang/core": "5.0.0 <= v < 6.0.0",
     "elm-lang/html": "2.0.0 <= v < 3.0.0"
   },

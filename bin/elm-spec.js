@@ -5,6 +5,7 @@ var temp = require('temp').track()
 var globby = require('globby')
 var colors = require('colors')
 var jsdom = require('jsdom')
+var async = require('async')
 
 var elmExecutable = which.sync('elm-make')
 
@@ -36,68 +37,74 @@ var render = function(file, callback) {
   })
 }
 
+var localStorage = new LocalStorage(temp.mkdirSync());
+
 var run = function(file) {
-  render(file, function(result, filename){
-    if(result){
-      console.log(result)
-    } else {
-      jsdom.env(
-        "<html></html>",
-        [__dirname + "/lib/raf.js",filename],
-        { virtualConsole: jsdom.createVirtualConsole().sendTo(console) },
-        function (err, window) {
-          window.localStorage = new LocalStorage('./localStorageTemp');
-          if(!window.Elm){
-            console.log(`No Main found for: ${file}, skipping...`)
-          } else {
-            var app = window.Elm.Main.embed(window.document.body)
-            app.ports.report.subscribe(function(results){
-              var steps = results.reduce(function(memo, test) {
-                return memo + test.results.length
-              }, 0)
-
-              var failed = results.reduce(function(memo, test) {
-                return memo +  test.results.filter(function(result){ return result.outcome == 'fail' }).length
-              }, 0)
-
-              var errored = results.reduce(function(memo, test) {
-                return memo +  test.results.filter(function(result){ return result.outcome == 'error' }).length
-              }, 0)
-
-              var successfull = results.reduce(function(memo, test) {
-                return memo + test.results.filter(function(result){ return result.outcome == 'pass' }).length
-              }, 0)
-
-              results.forEach(function(test){
-                console.log(" " + test.name.bold)
-                test.results.forEach(function(result){
-                  switch(result.outcome) {
-                    case "pass":
-                      console.log("   " + result.message.green)
-                      break
-                    case "fail":
-                      console.log("   " + result.message.red)
-                      break
-                    case "error":
-                      console.log("   " + result.message.bgRed)
-                  }
+  return function(callback){
+    render(file, function(result, filename){
+      console.log(file)
+      if(result){
+        console.log(result)
+        callback(null, [])
+      } else {
+        jsdom.env(
+          "<html></html>",
+          [__dirname + "/lib/raf.js",filename],
+          { virtualConsole: jsdom.createVirtualConsole().sendTo(console) },
+          function (err, window) {
+            window.localStorage = localStorage
+            localStorage.clear()
+            if(!window.Elm){
+              console.log(`No Main found for: ${file}, skipping...`)
+            } else {
+              var app = window.Elm.Main.embed(window.document.body)
+              app.ports.elmSpecReport.subscribe(function(results){
+                results.forEach(function(test){
+                  console.log(" " + test.name.bold)
+                  test.results.forEach(function(result){
+                    switch(result.outcome) {
+                      case "pass":
+                        console.log("   " + result.message.green)
+                        break
+                      case "fail":
+                        console.log("   " + result.message.red)
+                        break
+                      case "error":
+                        console.log("   " + result.message.bgRed)
+                    }
+                  })
                 })
                 console.log("")
+                callback(null, results)
               })
-
-              console.log(`${results.length} tests: ${steps} steps ${successfull} successfull ${failed} failed ${errored} errored`)
-
-              window.localStorage._deleteLocation()
-            })
+            }
           }
-        }
-      )
-    }
-  })
+        )
+      }
+    })
+  }
 }
 
 globby(['spec/**Spec.elm']).then(paths => {
-  paths.forEach(path => {
-    run(path)
+  var files = paths.map(path => { return run(path) })
+  async.series(files, function(errors, allresults){
+    var results = allresults.reduce(function(memo, a) { return memo.concat(a) }, [])
+    var steps = results.reduce(function(memo, test) {
+      return memo + test.results.length
+    }, 0)
+
+    var failed = results.reduce(function(memo, test) {
+      return memo +  test.results.filter(function(result){ return result.outcome == 'fail' }).length
+    }, 0)
+
+    var errored = results.reduce(function(memo, test) {
+      return memo +  test.results.filter(function(result){ return result.outcome == 'error' }).length
+    }, 0)
+
+    var successfull = results.reduce(function(memo, test) {
+      return memo + test.results.filter(function(result){ return result.outcome == 'pass' }).length
+    }, 0)
+
+    console.log(`${allresults.length} files ${results.length} tests: ${steps} steps ${successfull} successfull ${failed} failed ${errored} errored`)
   })
 });

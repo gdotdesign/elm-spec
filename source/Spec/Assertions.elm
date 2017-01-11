@@ -1,4 +1,9 @@
-module Spec.Assertions exposing (..)
+module Spec.Assertions exposing
+  ( fail
+  , pass
+  , error
+  , assert
+  )
 
 import Task exposing (Task)
 
@@ -27,29 +32,29 @@ switch =
   )
 
 assert :
-  { containsText : TextData -> Assertion
-  , attributeContains : AttributeData -> Assertion
+  { attributeContains : AttributeData -> Assertion
   , attributeEquals : AttributeData -> Assertion
   , classPresent : ClassData -> Assertion
+  , containsText : TextData -> Assertion
   , styleEquals : StyleData -> Assertion
   , not :
-    { containsText : TextData -> Assertion
-    , attributeContains : AttributeData -> Assertion
+    { attributeContains : AttributeData -> Assertion
     , attributeEquals : AttributeData -> Assertion
     , classPresent : ClassData -> Assertion
+    , containsText : TextData -> Assertion
     , styleEquals : StyleData -> Assertion
     }
   }
 assert =
-  { containsText = Spec.Native.containsText
-  , attributeContains = Spec.Native.attributeContains
+  { attributeContains = Spec.Native.attributeContains
   , attributeEquals = Spec.Native.attributeEquals
+  , containsText = Spec.Native.containsText
   , classPresent = Spec.Native.classPresent
   , styleEquals = Spec.Native.styleEquals
   , not =
-    { containsText = Spec.Native.containsText >> switch
-    , attributeContains = Spec.Native.attributeContains >> switch
+    { attributeContains = Spec.Native.attributeContains >> switch
     , attributeEquals = Spec.Native.attributeEquals >> switch
+    , containsText = Spec.Native.containsText >> switch
     , classPresent = Spec.Native.classPresent >> switch
     , styleEquals = Spec.Native.styleEquals >> switch
     }

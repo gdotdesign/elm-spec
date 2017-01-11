@@ -3,6 +3,7 @@ port module Spec.Runner exposing (..)
 import Spec.Types exposing (Outcome(..), Assertion)
 import Spec.Steps
 import Spec exposing (Test)
+import Spec.Styles as Styles exposing (stylesheet)
 
 import Task
 import Json.Encode
@@ -28,7 +29,7 @@ perform msg =
 
 update : Msg msg -> State app msg -> (State app msg, Cmd (Msg msg))
 update msg model =
-  case Debug.log "" msg of
+  case msg of
     App appMsg ->
       let
         (app, cmd) = model.update appMsg model.app
@@ -61,14 +62,14 @@ update msg model =
                 , finishedTests = model.finishedTests ++ [updatedTest]
                 } ! [perform (Next Nothing)]
         [] ->
-          model ! [report (List.map transformTest model.finishedTests)]
+          model ! [elmSpecReport (List.map transformTest model.finishedTests)]
 
 runCmd : List Test -> Cmd (Msg msg)
 runCmd tests =
   case tests of
     test :: tail ->
       perform (Next Nothing)
-    [] -> report []
+    [] -> elmSpecReport []
 
 run tests =
   let
@@ -81,7 +82,8 @@ run tests =
       , subscriptions = (\_ -> Sub.none)
       , view = \model ->
         if List.isEmpty model.tests then
-          Html.div [] (renderResults model.finishedTests)
+          Html.div [ stylesheet.class Styles.Container ]
+            (renderResults model.finishedTests)
         else
           Html.text ""
       }
@@ -97,7 +99,8 @@ runWithProgram data tests =
       , subscriptions = (\_ -> Sub.none)
       , view = \model ->
         if List.isEmpty model.tests then
-          Html.div [] (renderResults model.finishedTests)
+          Html.div [ stylesheet.class Styles.Container ]
+            ([ Styles.embed] ++ (renderResults model.finishedTests))
         else
           Html.map App (model.view model.app)
       }
@@ -106,14 +109,19 @@ renderTest model =
   let
     renderLine result =
       let
-        color =
+        teststyle =
           case result of
-            Pass _ -> "green"
-            _ -> "red"
+            Pass _ -> style [("color", "green")]
+            Error _ -> style [("color", "white"), ("background-color", "red")]
+            Fail _ -> style [("color", "red")]
       in
-        div [style [("color", color)], property "innerHTML" (Json.Encode.string (Native.Spec.ansiToHtml (stepToString result)))] []
+        div
+        [ teststyle
+        , stylesheet.class Styles.Test
+        , property "innerHTML" (Json.Encode.string (Native.Spec.ansiToHtml (stepToString result)))
+        ] []
   in
-    div []
+    div [ stylesheet.class Styles.Row ]
       ([ strong [] [ text model.name ]
       ] ++ (List.map renderLine model.results ))
 
@@ -143,4 +151,4 @@ transformTest test =
   , name = test.name
   }
 
-port report : List TestResult -> Cmd msg
+port elmSpecReport : List TestResult -> Cmd msg

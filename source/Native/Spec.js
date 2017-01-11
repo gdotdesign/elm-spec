@@ -91,19 +91,15 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   }
 
   var getAttribute = function(attribute, selector) {
-    return taskWithElement(selector, function(callback){
-      return succeed(el.getAttribute(attribute))
+    return taskWithElement(selector, function(element){
+      return succeed(element.getAttribute(attribute))
     })
   }
 
   var click = function(selector){
-    return task(function(callback){
-      try {
-        document.querySelector(selector).click()
-        callback(succeed(pass("Clicked: " + selector)))
-      } catch (e) {
-        callback(succeed(error(e.toString())))
-      }
+    return taskWithElement(selector, function(element){
+      element.click()
+      return pass("Clicked: " + bold(selector))
     })
   }
 

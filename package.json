@@ -17,6 +17,7 @@
     "start": "elm-reactor -p 8002"
   },
   "dependencies": {
+    "async": "^2.1.4",
     "colors": "^1.1.2",
     "elm": "^0.18.0",
     "globby": "^6.1.0",
