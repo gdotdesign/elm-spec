@@ -1,0 +1,32 @@
+{
+  "name": "elm-spec",
+  "version": "1.0.0",
+  "description": "Integration testing in Elm.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gdotdesign/elm-spec.git"
+  },
+  "homepage": "https://github.com/gdotdesign/elm-spec#readme",
+  "author": "",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/gdotdesign/elm-spec/issues"
+  },
+  "scripts": {
+    "spec": "node bin/elm-spec.js",
+    "start": "elm-reactor -p 8002"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "elm": "^0.18.0",
+    "globby": "^6.1.0",
+    "jsdom": "^9.9.1",
+    "node-localstorage": "^1.3.0",
+    "npm-which": "^3.0.1",
+    "temp": "^0.8.3"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "elm-spec": "bin/elm-spec.js"
+  }
+}
