@@ -4,8 +4,6 @@ cache:
   directories:
     - ~/.elm-install
     - elm-stuff
-sudo: required
-dist: trusty
 script:
   - yarn run elm-install
   - yarn spec
