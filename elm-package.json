@@ -10,9 +10,11 @@
   ],
   "exposed-modules": [
     "Spec.Assertions",
+    "Spec.Reporter",
     "Spec.Native",
     "Spec.Runner",
     "Spec.Steps",
+    "Spec.Styles",
     "Spec"
   ],
   "dependencies": {

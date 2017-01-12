@@ -121,6 +121,12 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     ansiToHtml: function(value){
       return value.replace(/\x1b\[1m(.*?)\x1b\[21m/g, "<b>$1</b>")
     },
+    report: function(data){
+      if(window._elmSpecReport){
+        window._elmSpecReport(data)
+      }
+      return task(function(){succeed(tuple0)})
+    },
     click: click,
     raf: raf()
   }

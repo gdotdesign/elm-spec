@@ -58,7 +58,7 @@ var run = function(file) {
               console.log(`No Main found for: ${file}, skipping...`)
             } else {
               var app = window.Elm.Main.embed(window.document.body)
-              app.ports.elmSpecReport.subscribe(function(results){
+              window._elmSpecReport = function(results){
                 results.forEach(function(test){
                   console.log(" " + test.name.bold)
                   test.results.forEach(function(result){
@@ -76,7 +76,7 @@ var run = function(file) {
                 })
                 console.log("")
                 callback(null, results)
-              })
+              }
             }
           }
         )
