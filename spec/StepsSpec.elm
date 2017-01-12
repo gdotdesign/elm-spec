@@ -8,6 +8,8 @@ import Html.Attributes exposing (attribute)
 import Html.Events exposing (onClick)
 import Html exposing (..)
 
+import Json.Encode as Json
+
 type alias Model = String
 
 type Msg
@@ -28,9 +30,12 @@ update msg model =
 
 view : Model -> Html.Html Msg
 view model =
-  div
-    [ attribute "test" "test", onClick Set ]
-    [ text model ]
+  node "test" []
+    [ div
+      [ attribute "test" "test", onClick Set ]
+      [ text model ]
+    , input [] []
+    ]
 
 
 specs : Node
@@ -48,6 +53,28 @@ specs =
         [ getAttribute "test" "div"
           |> Expect.equals "test"
             "Testing if attribute equals with getAttribute"
+        ]
+      ]
+    , describe ".setValue"
+      [ it "should set value of element"
+        [ assert.valueEquals { text = "", selector = "input" }
+        , setValue { value = "test", selector = "input" }
+        , assert.valueEquals { text = "test", selector = "input" }
+        ]
+      ]
+    , describe ".clearValue"
+      [ it "should clear value of element"
+        [ setValue { value = "test", selector = "input" }
+        , assert.valueEquals { text = "test", selector = "input" }
+        , clearValue "input"
+        , assert.valueEquals { text = "", selector = "input" }
+        ]
+      ]
+    , describe ".dispatchEvent"
+      [ it "should dispatch the given event"
+        [ assert.containsText { text = "Empty", selector = "div" }
+        , dispatchEvent "click" (Json.object []) "div"
+        , assert.containsText { text = "Something", selector = "div" }
         ]
       ]
     ]

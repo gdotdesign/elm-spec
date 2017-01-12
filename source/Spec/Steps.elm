@@ -26,17 +26,17 @@ clearValue selector =
 
 {-| Sets the value of the element with the given selector.
 -}
-setValue : String -> String -> Step
-setValue value selector =
+setValue : ValueData -> Step
+setValue { value, selector } =
   Native.Spec.setValue value selector
 
 
 {-| Dispatches an event with the given data for the element with the given
 selector.
 -}
-dispatchEvent : String -> String -> Json.Value -> Step
-dispatchEvent event selector data =
-  Native.Spec.dispatchEvent event selector data
+dispatchEvent : String -> Json.Value -> String -> Step
+dispatchEvent event data selector =
+  Native.Spec.dispatchEvent event data selector
 
 
 {-| Triggers a click on the given selector.

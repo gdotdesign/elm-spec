@@ -19,6 +19,10 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return '\x1b[1m' + message + '\x1b[21m'
   }
 
+  var boldString = function(message) {
+    return bold('"' + message + '"')
+  }
+
   var withElement = function(selector, method) {
     try {
       var el = document.querySelector(selector)
@@ -41,9 +45,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   var containsText = function(value, selector){
     return taskWithElement(selector, function(element){
       if(element.textContent.indexOf(value) >= 0) {
-        return pass("Element " + bold(selector) + " contains text " + bold(value))
+        return pass("Element " + bold(selector) + " contains text " + boldString(value))
       } else {
-        return fail("Element " + bold(selector) + " does not contain text " + bold(value))
+        return fail("Element " + bold(selector) + " does not contain text " + boldString(value))
       }
     })
   }
@@ -52,9 +56,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return taskWithElement(selector, function(element){
       var attributeValue = element.getAttribute(attribute) || ''
       if(attributeValue.indexOf(value) >= 0){
-        return pass("Attribute " + bold(attribute) + " of element " + bold(selector) + " contains text " + bold(value))
+        return pass("Attribute " + bold(attribute) + " of element " + bold(selector) + " contains text " + boldString(value))
       } else {
-        return fail("Attribute " + bold(attribute) + " of element " + bold(selector) + " does not contain text " + bold(value))
+        return fail("Attribute " + bold(attribute) + " of element " + bold(selector) + " does not contain text " + boldString(value))
       }
     })
   }
@@ -63,9 +67,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return taskWithElement(selector, function(element){
       var attributeValue = element.getAttribute(attribute) || ''
       if(attributeValue.toString() === value) {
-        return pass("Attribute " + bold(attribute) + " of element " + bold(selector) + " equals " + bold(value))
+        return pass("Attribute " + bold(attribute) + " of element " + bold(selector) + " equals " + boldString(value))
       } else {
-        return fail("Attribute " + bold(attribute) + " of element " + bold(selector) + " does not equal " + bold(value))
+        return fail("Attribute " + bold(attribute) + " of element " + bold(selector) + " does not equal " + boldString(value))
       }
     })
   }
@@ -83,9 +87,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   var styleEquals = function(style, value, selector) {
     return taskWithElement(selector, function(element){
       if(window.getComputedStyle(element)[style].toString() === value){
-        return pass("Element " + bold(selector) + " has style " + bold(style) + " with value " + bold(value))
+        return pass("Element " + bold(selector) + " has style " + bold(style) + " with value " + boldString(value))
       }else{
-        return fail("Element " + bold(selector) + " does not have style " + bold(style) + " with value " + bold(value))
+        return fail("Element " + bold(selector) + " does not have style " + bold(style) + " with value " + boldString(value))
       }
     })
   }
@@ -138,9 +142,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return task(function(callback){
       var title = document.title.toString()
       if(title.indexOf(text) >= 0) {
-        callback(succeed(pass("Title " + bold(title) + " contains text " + bold(text))))
+        callback(succeed(pass("Title " + boldString(title) + " contains text " + boldString(text))))
       } else {
-        callback(succeed(fail("Title " + bold(title) + " does not contain text " + bold(text))))
+        callback(succeed(fail("Title " + boldString(title) + " does not contain text " + boldString(text))))
       }
     })
   }
@@ -149,9 +153,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return task(function(callback){
       var title = document.title.toString()
       if(title === text) {
-        callback(succeed(pass("Title equals " + bold(text))))
+        callback(succeed(pass("Title equals " + boldString(text))))
       } else {
-        callback(succeed(fail("Title " + bold(title) + " does not equal " + bold(text))))
+        callback(succeed(fail("Title " + boldString(title) + " does not equal " + boldString(text))))
       }
     })
   }
@@ -160,9 +164,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return task(function(callback){
       var url = window.location.toString()
       if(url.indexOf(text) >= 0) {
-        callback(succeed(pass("URL " + bold(url) + " contains text " + bold(text))))
+        callback(succeed(pass("URL " + boldString(url) + " contains text " + boldString(text))))
       } else {
-        callback(succeed(fail("URL " + bold(url) + " does not contain text " + bold(text))))
+        callback(succeed(fail("URL " + boldString(url) + " does not contain text " + boldString(text))))
       }
     })
   }
@@ -171,9 +175,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return taskWithElement(selector, function(element){
       var value = (element.value || '').toString()
       if(value.indexOf(text) >= 0) {
-        return pass("Value " + bold('"' + value + '"') + " of element " + bold(selector) + " contains text " + bold(text))
+        return pass("Value " + boldString(value) + " of element " + bold(selector) + " contains text " + boldString(text))
       } else {
-        return fail("Value " + bold('"' + value + '"') + " of element " + bold(selector) + " does not contain text " + bold(text))
+        return fail("Value " + boldString(value) + " of element " + bold(selector) + " does not contain text " + boldString(text))
       }
     })
   }
@@ -182,9 +186,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return taskWithElement(selector, function(element){
       var value = (element.value || '').toString()
       if(value === text ) {
-        return pass("Value of element " + bold(selector) + " equals " + bold(text))
+        return pass("Value of element " + bold(selector) + " equals " + boldString(text))
       } else {
-        return fail("Value " + bold('"' + value + '"') + " of element " + bold(selector) + " does not equal " + bold(text))
+        return fail("Value " + boldString(value) + " of element " + bold(selector) + " does not equal " + boldString(text))
       }
     })
   }
@@ -193,9 +197,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return task(function(callback){
       var url = window.location.toString()
       if(url === text) {
-        callback(succeed(pass("URL equals " + bold(text))))
+        callback(succeed(pass("URL equals " + boldString(text))))
       } else {
-        callback(succeed(fail("URL " + bold(url) + " does not equal " + bold(text))))
+        callback(succeed(fail("URL " + bold(url) + " does not equal " + boldString(text))))
       }
     })
   }
@@ -210,6 +214,34 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return taskWithElement(selector, function(element){
       element.click()
       return pass("Clicked: " + bold(selector))
+    })
+  }
+
+  var setValue = function(value, selector){
+    return taskWithElement(selector, function(element){
+      element.value = value
+      return pass("Set value to " + boldString(value) + " of " + bold(selector))
+    })
+  }
+
+  var clearValue = function(selector){
+    return taskWithElement(selector, function(element){
+      element.value = ""
+      return pass("Cleared value of " + bold(selector))
+    })
+  }
+
+  var dispatchEvent = function(eventType, data, selector){
+    return taskWithElement(selector, function(element){
+      var event = new Event(eventType)
+
+      for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+          console.log(key + " -> " + p[key]);
+        }
+      }
+      element.dispatchEvent(event)
+      return pass("Dispatched event " + bold(eventType) + " on element " + bold(selector))
     })
   }
 
@@ -233,6 +265,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     attributeContains: F3(attributeContains),
     attributeEquals: F3(attributeEquals),
     valueContains: F2(valueContains),
+    dispatchEvent: F3(dispatchEvent),
     classPresent: F2(classPresent),
     containsText: F2(containsText),
     getAttribute: F2(getAttribute),
@@ -243,6 +276,8 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     valueEquals: F2(valueEquals),
     titleEquals: titleEquals,
     urlContains: urlContains,
+    clearValue: clearValue,
+    setValue: F2(setValue),
     urlEquals: urlEquals,
     getTitle: getTitle,
     getUrl: getUrl,

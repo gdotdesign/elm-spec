@@ -33,6 +33,12 @@ type alias TextData =
   { text : String, selector : String }
 
 
+{-| Text data for assertions.
+-}
+type alias ValueData =
+  { value : String, selector : String }
+
+
 {-| Attribute data for assertions.
 -}
 type alias AttributeData =
