@@ -59,24 +59,28 @@ flip =
 assert :
   { attributeContains : AttributeData -> Assertion
   , attributeEquals : AttributeData -> Assertion
+  , valueContains : TextData -> Assertion
   , classPresent : ClassData -> Assertion
   , containsText : TextData -> Assertion
   , styleEquals : StyleData -> Assertion
   , elementPresent : String -> Assertion
   , elementVisible : String -> Assertion
   , titleContains : String -> Assertion
+  , valueEquals : TextData -> Assertion
   , titleEquals : String -> Assertion
   , urlContains : String -> Assertion
   , urlEquals : String -> Assertion
   , not :
     { attributeContains : AttributeData -> Assertion
     , attributeEquals : AttributeData -> Assertion
+    , valueContains : TextData -> Assertion
     , classPresent : ClassData -> Assertion
     , containsText : TextData -> Assertion
     , styleEquals : StyleData -> Assertion
     , elementPresent : String -> Assertion
     , elementVisible : String -> Assertion
     , titleContains : String -> Assertion
+    , valueEquals : TextData -> Assertion
     , titleEquals : String -> Assertion
     , urlContains : String -> Assertion
     , urlEquals : String -> Assertion
@@ -87,11 +91,13 @@ assert =
   , attributeEquals = Spec.Native.attributeEquals
   , elementPresent = Spec.Native.elementPresent
   , elementVisible = Spec.Native.elementVisible
+  , valueContains = Spec.Native.valueContains
   , titleContains = Spec.Native.titleContains
   , containsText = Spec.Native.containsText
   , classPresent = Spec.Native.classPresent
   , styleEquals = Spec.Native.styleEquals
   , titleEquals = Spec.Native.titleEquals
+  , valueEquals = Spec.Native.valueEquals
   , urlContains = Spec.Native.urlContains
   , urlEquals = Spec.Native.urlEquals
   , not =
@@ -99,11 +105,13 @@ assert =
     , attributeEquals = Spec.Native.attributeEquals >> flip
     , elementPresent = Spec.Native.elementPresent >> flip
     , elementVisible = Spec.Native.elementVisible >> flip
+    , valueContains = Spec.Native.valueContains >> flip
     , titleContains = Spec.Native.titleContains >> flip
     , containsText = Spec.Native.containsText >> flip
     , classPresent = Spec.Native.classPresent >> flip
     , styleEquals = Spec.Native.styleEquals >> flip
     , titleEquals = Spec.Native.titleEquals >> flip
+    , valueEquals = Spec.Native.valueEquals >> flip
     , urlContains = Spec.Native.urlContains >> flip
     , urlEquals = Spec.Native.urlEquals >> flip
     }

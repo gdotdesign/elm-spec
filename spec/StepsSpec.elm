@@ -1,8 +1,10 @@
 import Spec.Assertions exposing (..)
+import Spec.Expect as Expect
 import Spec.Runner exposing (..)
 import Spec.Steps exposing (..)
 import Spec exposing (..)
 
+import Html.Attributes exposing (attribute)
 import Html.Events exposing (onClick)
 import Html exposing (..)
 
@@ -12,8 +14,8 @@ type Msg
   = Set
 
 
-init : Model
-init =
+init : () -> Model
+init _ =
   "Empty"
 
 
@@ -27,7 +29,7 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
   div
-    [ onClick Set ]
+    [ attribute "test" "test", onClick Set ]
     [ text model ]
 
 
@@ -39,6 +41,13 @@ specs =
         [ assert.containsText { text = "Empty", selector = "div" }
         , click "div"
         , assert.containsText { text = "Something", selector = "div" }
+        ]
+      ]
+    , describe ".getAttribute"
+      [ it "should return attribute"
+        [ getAttribute "test" "div"
+          |> Expect.equals "test"
+            "Testing if attribute equals with getAttribute"
         ]
       ]
     ]

@@ -20,6 +20,7 @@ type alias State model msg =
   { update : msg -> model -> ( model, Cmd msg )
   , view : model -> Html.Html msg
   , finishedTests : List Test
+  , appInit : () -> model
   , tests : List Test
   , app : model
   }
@@ -39,7 +40,7 @@ type alias Prog model msg =
   { update : msg -> model -> ( model, Cmd msg )
   , subscriptions : model -> Sub msg
   , view : model -> Html.Html msg
-  , init : model
+  , init : () -> model
   }
 
 
@@ -100,6 +101,7 @@ update msg model =
               [] ->
                 ( { model
                   | finishedTests = model.finishedTests ++ [updatedTest]
+                  , app = model.appInit ()
                   , tests = remainingTests
                   }
                 , perform (Next Nothing)
@@ -128,7 +130,7 @@ run tests =
     { update = (\_ _ -> ( "", Cmd.none ))
     , subscriptions = (\_ -> Sub.none)
     , view = (\_ -> Html.text "")
-    , init = ""
+    , init = (\_ -> "")
     }
     tests
 
@@ -144,9 +146,10 @@ runWithProgram data tests =
     , init =
       ( { tests = (Spec.flatten [] [] tests)
         , update = data.update
+        , appInit = data.init
         , finishedTests = []
+        , app = data.init ()
         , view = data.view
-        , app = data.init
         }
       , perform (Next Nothing)
       )

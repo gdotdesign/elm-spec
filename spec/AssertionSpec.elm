@@ -3,7 +3,7 @@ import Spec.Runner exposing (..)
 import Spec.Steps exposing (..)
 import Spec exposing (..)
 
-import Html.Attributes exposing (attribute, class, style)
+import Html.Attributes exposing (attribute, class, style, value)
 import Html exposing (..)
 
 import Task
@@ -16,8 +16,8 @@ type Msg
   = NoOp
 
 
-init : Model
-init =
+init : () -> Model
+init _ =
   {}
 
 
@@ -40,6 +40,7 @@ view model =
     , div [ class "hidden-by-visiblity", style [ ( "visibility", "hidden" ) ] ] []
     , div [ class "hidden-by-z-index", style [ ( "position", "relative"), ("z-index", "-1" ) ] ]
       [ span [] [ i [] [] ] ]
+    , input [ value "value of input" ] []
     ]
 
 
@@ -132,6 +133,18 @@ specs =
       [ it "should check if title equals text"
         [ Task.andThen assert.urlEquals getUrl
         , assert.not.urlEquals "Blah"
+        ]
+      ]
+    , describe ".valueContains"
+      [ it "should check if elements value contains text"
+        [ assert.valueContains { text = "value", selector = "input" }
+        , assert.not.valueContains { text = "asd", selector = "input" }
+        ]
+      ]
+    , describe ".valueEquals"
+      [ it "should check if elements value equals text"
+        [ assert.valueEquals { text = "value of input", selector = "input" }
+        , assert.not.valueEquals { text = "asd", selector = "input" }
         ]
       ]
     ]

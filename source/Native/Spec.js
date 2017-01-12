@@ -167,6 +167,28 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     })
   }
 
+  var valueContains = function(text, selector) {
+    return taskWithElement(selector, function(element){
+      var value = (element.value || '').toString()
+      if(value.indexOf(text) >= 0) {
+        return pass("Value " + bold('"' + value + '"') + " of element " + bold(selector) + " contains text " + bold(text))
+      } else {
+        return fail("Value " + bold('"' + value + '"') + " of element " + bold(selector) + " does not contain text " + bold(text))
+      }
+    })
+  }
+
+  var valueEquals = function(text, selector) {
+    return taskWithElement(selector, function(element){
+      var value = (element.value || '').toString()
+      if(value === text ) {
+        return pass("Value of element " + bold(selector) + " equals " + bold(text))
+      } else {
+        return fail("Value " + bold('"' + value + '"') + " of element " + bold(selector) + " does not equal " + bold(text))
+      }
+    })
+  }
+
   var urlEquals = function(text) {
     return task(function(callback){
       var url = window.location.toString()
@@ -210,6 +232,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   return {
     attributeContains: F3(attributeContains),
     attributeEquals: F3(attributeEquals),
+    valueContains: F2(valueContains),
     classPresent: F2(classPresent),
     containsText: F2(containsText),
     getAttribute: F2(getAttribute),
@@ -217,6 +240,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     elementVisible: elementVisible,
     titleContains: titleContains,
     styleEquals: F3(styleEquals),
+    valueEquals: F2(valueEquals),
     titleEquals: titleEquals,
     urlContains: urlContains,
     urlEquals: urlEquals,
