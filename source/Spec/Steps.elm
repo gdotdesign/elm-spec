@@ -1,4 +1,4 @@
-module Spec.Steps exposing (click, getAttribute)
+module Spec.Steps exposing (..)
 
 {-| Common steps for testing web applications (click, fill, etc..)
 
@@ -6,7 +6,7 @@ module Spec.Steps exposing (click, getAttribute)
 @docs click
 
 # Querying
-@docs getAttribute
+@docs getAttribute, getUrl, getTitle
 -}
 import Spec.Types exposing (..)
 
@@ -18,6 +18,20 @@ import Task exposing (Task)
 click : String -> Step
 click selector =
   Native.Spec.click selector
+
+
+{-| Gets the current URL.
+-}
+getUrl : Task Never String
+getUrl =
+  Native.Spec.getUrl
+
+
+{-| Gets the current title.
+-}
+getTitle : Task Never String
+getTitle =
+  Native.Spec.getTitle
 
 
 {-| Gets the given attribute of the element with the given selector.

@@ -48,7 +48,7 @@ var run = function(file) {
         callback(null, [])
       } else {
         jsdom.env(
-          "<html></html>",
+          "<html><title>Elm-Spec</title></html>",
           [__dirname + "/lib/raf.js",filename],
           { virtualConsole: jsdom.createVirtualConsole().sendTo(console) },
           function (err, window) {
@@ -106,5 +106,6 @@ globby(['spec/**Spec.elm']).then(paths => {
     }, 0)
 
     console.log(`${allresults.length} files ${results.length} tests: ${steps} steps ${successfull} successfull ${failed} failed ${errored} errored`)
+    process.exit(failed || errored ? 1 : 0)
   })
 });

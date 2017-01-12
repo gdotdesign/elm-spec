@@ -25,7 +25,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
       if(el){
         return method(el)
       } else {
-        return error("Element not found: " + selector)
+        return error("Element not found: " + bold(selector))
       }
     } catch (e) {
       return error(e.toString())
@@ -52,9 +52,9 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     return taskWithElement(selector, function(element){
       var attributeValue = element.getAttribute(attribute) || ''
       if(attributeValue.indexOf(value) >= 0){
-        return pass("Attribute " + bold(attribute) + " of element " + bold(selector) + " contains " + bold(value))
+        return pass("Attribute " + bold(attribute) + " of element " + bold(selector) + " contains text " + bold(value))
       } else {
-        return fail("Attribute " + bold(attribute) + " of element " + bold(selector) + " does not contain " + bold(value))
+        return fail("Attribute " + bold(attribute) + " of element " + bold(selector) + " does not contain text " + bold(value))
       }
     })
   }
@@ -90,9 +90,97 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     })
   }
 
+  var elementPresent = function(selector){
+    return task(function(callback){
+      try {
+        var el = document.querySelector(selector)
+        if(el){
+          return callback(succeed(pass("Element " + bold(selector) + " is present")))
+        } else {
+          return callback(succeed(fail("Element " + bold(selector) + " is not present")))
+        }
+      } catch (e) {
+        return callback(succeed(error(e.toString())))
+      }
+    })
+  }
+
+  var elementVisible = function(selector){
+    return taskWithElement(selector, function(element){
+      var result = testVisibility(element, selector)
+      if(result) {
+        return result;
+      } else {
+        return pass("Element " + bold(selector) + " should be visible (no CSS used to hide it)")
+      }
+    })
+  }
+
+  var testVisibility = function(element, selector){
+    if(!element) { return null }
+    var style = window.getComputedStyle(element)
+    if (style.display === 'none'){
+      return fail("Element " + bold(selector) + " is hidden by "+ bold('display: none'))
+    } else if (parseFloat(style.opacity) === 0) {
+      return fail("Element " + bold(selector) + " is hidden by "+ bold('opacity: 0'))
+    } else if (style.visibility === 'hidden') {
+      return fail("Element " + bold(selector) + " is hidden by "+ bold('visiblity: hidden'))
+    } else if (style.zIndex != "auto" && parseInt(style.zIndex) < 0) {
+      return fail("Element " + bold(selector) + " is hidden by "+ bold('z-index: ' + style.zIndex))
+    } else if (testVisibility(element.parentElement, "")) {
+      return fail("Element " + bold(selector) + " is hidden by parent element.")
+    } else {
+      return null;
+    }
+  }
+
+  var titleContains = function(text) {
+    return task(function(callback){
+      var title = document.title.toString()
+      if(title.indexOf(text) >= 0) {
+        callback(succeed(pass("Title " + bold(title) + " contains text " + bold(text))))
+      } else {
+        callback(succeed(fail("Title " + bold(title) + " does not contain text " + bold(text))))
+      }
+    })
+  }
+
+  var titleEquals = function(text) {
+    return task(function(callback){
+      var title = document.title.toString()
+      if(title === text) {
+        callback(succeed(pass("Title equals " + bold(text))))
+      } else {
+        callback(succeed(fail("Title " + bold(title) + " does not equal " + bold(text))))
+      }
+    })
+  }
+
+  var urlContains = function(text) {
+    return task(function(callback){
+      var url = window.location.toString()
+      if(url.indexOf(text) >= 0) {
+        callback(succeed(pass("URL " + bold(url) + " contains text " + bold(text))))
+      } else {
+        callback(succeed(fail("URL " + bold(url) + " does not contain text " + bold(text))))
+      }
+    })
+  }
+
+  var urlEquals = function(text) {
+    return task(function(callback){
+      var url = window.location.toString()
+      if(url === text) {
+        callback(succeed(pass("URL equals " + bold(text))))
+      } else {
+        callback(succeed(fail("URL " + bold(url) + " does not equal " + bold(text))))
+      }
+    })
+  }
+
   var getAttribute = function(attribute, selector) {
     return taskWithElement(selector, function(element){
-      return succeed(element.getAttribute(attribute))
+      return element.getAttribute(attribute)
     })
   }
 
@@ -102,6 +190,14 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
       return pass("Clicked: " + bold(selector))
     })
   }
+
+  var getTitle = task(function(callback){
+    callback(succeed(document.title.toString()))
+  })
+
+  var getUrl = task(function(callback){
+    callback(succeed(window.location.toString()))
+  })
 
   var raf = function(){
     return task(function(callback){
@@ -117,7 +213,15 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     classPresent: F2(classPresent),
     containsText: F2(containsText),
     getAttribute: F2(getAttribute),
+    elementPresent: elementPresent,
+    elementVisible: elementVisible,
+    titleContains: titleContains,
     styleEquals: F3(styleEquals),
+    titleEquals: titleEquals,
+    urlContains: urlContains,
+    urlEquals: urlEquals,
+    getTitle: getTitle,
+    getUrl: getUrl,
     ansiToHtml: function(value){
       return value.replace(/\x1b\[1m(.*?)\x1b\[21m/g, "<b>$1</b>")
     },
