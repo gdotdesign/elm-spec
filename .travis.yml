@@ -1,0 +1,12 @@
+language: node_js
+cache:
+  yarn: true
+  directories:
+    - ~/.elm-install
+    - elm-stuff
+sudo: required
+dist: trusty
+install:
+  - yarn run elm-install
+script:
+  - yarn spec
