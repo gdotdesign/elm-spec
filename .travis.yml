@@ -6,7 +6,6 @@ cache:
     - elm-stuff
 sudo: required
 dist: trusty
-install:
-  - yarn run elm-install
 script:
+  - yarn run elm-install
   - yarn spec
