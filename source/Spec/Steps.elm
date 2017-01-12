@@ -15,6 +15,7 @@ import Spec.Types exposing (..)
 
 import Task exposing (Task)
 import Json.Decode as Json
+import Native.Spec
 
 
 {-| Clears the value of the element with the given selector.

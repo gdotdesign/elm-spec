@@ -54,12 +54,10 @@ view model =
 specs : Node
 specs =
   describe "Example"
-    [ describe "clicking on the div should change the text"
-      [ it "wait for the event to finish"
-        [ assert.containsText { text = "Empty", selector = "div" }
-        , click "div"
-        , assert.containsText { text = "Something", selector = "div" }
-        ]
+    [ it "clicking on the div should change the text"
+      [ assert.containsText { text = "Empty", selector = "div" }
+      , click "div"
+      , assert.containsText { text = "Something", selector = "div" }
       ]
     ]
 
@@ -75,8 +73,8 @@ main =
 And open the file in `elm-reactor` or run it wit the `elm-spec` command:
 
 ```
- Example / clicking on the div should change the text / wait for the event to finish
-   Element div contains text "Empty"
-   Clicked: div
-   Element div contains text "Something"
+Example / clicking on the div should change the text
+  Element div contains text "Empty"
+  Clicked: div
+  Element div contains text "Something"
 ```
