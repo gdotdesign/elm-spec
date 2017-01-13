@@ -18,5 +18,5 @@ before_install:
       cd ..;
     fi
 script:
-  - yarn run elm-install
+  - yarn elm-install
   - sysconfcpus/bin/sysconfcpus -n 2 yarn spec

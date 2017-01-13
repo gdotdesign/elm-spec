@@ -39,6 +39,7 @@ var render = function(file, callback) {
   })
 }
 
+var sessionStorage = new LocalStorage(temp.mkdirSync());
 var localStorage = new LocalStorage(temp.mkdirSync());
 
 var run = function(file) {
@@ -54,8 +55,12 @@ var run = function(file) {
           [__dirname + "/lib/raf.js",filename],
           { virtualConsole: jsdom.createVirtualConsole().sendTo(console) },
           function (err, window) {
+
+            window.sessionStorage = sessionStorage
             window.localStorage = localStorage
+            sessionStorage.clear()
             localStorage.clear()
+
             if(!window.Elm){
               console.log(`No Main found for: ${file}, skipping...`)
             } else {
