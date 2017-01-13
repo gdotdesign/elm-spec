@@ -6,7 +6,6 @@ cache:
   yarn: true
   directories:
     - ~/.elm-install
-    - elm-stuff
 script:
   - yarn run elm-install
   - yarn spec
