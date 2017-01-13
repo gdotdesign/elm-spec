@@ -6,6 +6,17 @@ cache:
   yarn: true
   directories:
     - ~/.elm-install
+    - sysconfcpus
+before_install:
+  - | # epic build time improvement - see https://github.com/elm-lang/elm-compiler/issues/1473#issuecomment-245704142
+    if [ ! -d sysconfcpus/bin ];
+    then
+      git clone https://github.com/obmarg/libsysconfcpus.git;
+      cd libsysconfcpus;
+      ./configure --prefix=$TRAVIS_BUILD_DIR/sysconfcpus;
+      make && make install;
+      cd ..;
+    fi
 script:
   - yarn run elm-install
-  - yarn spec
+  - sysconfcpus -n 2 yarn spec
