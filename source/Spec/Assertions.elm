@@ -5,14 +5,17 @@ module Spec.Assertions exposing (..)
 # Assert
 @docs assert
 
-# Utilities
-@docs fail, pass, error, flip
+# Outcome
+@docs Outcome, fail, pass, error, flip
 -}
 import Task exposing (Task)
 
 import Spec.Types exposing (..)
 import Spec.Native
 
+{-| The outcome of an assertion or step.
+-}
+type alias Outcome = Spec.Types.Outcome
 
 {-| Creates a failed outcome with the given message.
 -}
