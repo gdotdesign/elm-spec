@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 var LocalStorage = require('node-localstorage').LocalStorage
 var which = require('npm-which')(__dirname)
 var spawn = require('child_process').spawn
