@@ -53,7 +53,9 @@ var run = function(file) {
         jsdom.env(
           "<html><title>Elm-Spec</title></html>",
           [__dirname + "/lib/raf.js",filename],
-          { virtualConsole: jsdom.createVirtualConsole().sendTo(console) },
+          { virtualConsole: jsdom.createVirtualConsole().sendTo(console),
+            cookieJar: jsdom.createCookieJar(),
+          },
           function (err, window) {
 
             window.sessionStorage = sessionStorage
