@@ -11,6 +11,8 @@ import Spec.Steps
 
 import Json.Encode as Json
 import Task
+
+import Html.Keyed
 import Html
 
 
@@ -22,6 +24,7 @@ type alias State model msg =
   , finishedTests : List Test
   , appInit : () -> model
   , tests : List Test
+  , counter : Int
   , app : model
   }
 
@@ -101,6 +104,7 @@ update msg model =
               [] ->
                 ( { model
                   | finishedTests = model.finishedTests ++ [updatedTest]
+                  , counter = model.counter + 1
                   , app = model.appInit ()
                   , tests = remainingTests
                   }
@@ -116,10 +120,15 @@ update msg model =
 -}
 view : State model msg -> Html.Html (Msg msg)
 view model =
-  if List.isEmpty model.tests then
-    Spec.Reporter.render model.finishedTests
-  else
-    Html.map App (model.view model.app)
+  let
+    node =
+      if List.isEmpty model.tests then
+        ( "report", Spec.Reporter.render model.finishedTests )
+      else
+        ( toString model.counter, Html.map App (model.view model.app) )
+
+  in
+    Html.Keyed.node "testing-node-123456" [] [ node ]
 
 
 {-| Runs the given tests without an app / component.
@@ -150,6 +159,7 @@ runWithProgram data tests =
         , finishedTests = []
         , app = data.init ()
         , view = data.view
+        , counter = 0
         }
       , perform (Next Nothing)
       )
