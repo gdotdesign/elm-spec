@@ -7,6 +7,8 @@ module Spec exposing
   , describe
   , it
   , test
+  , before
+  , after
   )
 
 {-| This module provides a way to test Elm apps end-to-end in the browser.
@@ -19,6 +21,9 @@ module Spec exposing
 
 # Defining Tests
 @docs it, test
+
+# Hooks
+@docs before, after
 -}
 import Spec.Types exposing (..)
 import Spec.Steps
@@ -49,6 +54,8 @@ type alias Group =
 type Node
   = GroupNode Group
   | TestNode Test
+  | Before (List Assertion)
+  | After (List Assertion)
 
 
 {-| Turns a tree into a flat list of tests.
@@ -56,9 +63,44 @@ type Node
 flatten : List String -> List Test -> Node -> List Test
 flatten path tests node =
   case node of
+    Before steps ->
+      tests
+
+    After steps ->
+      tests
+
     GroupNode node ->
-      List.map (flatten (path ++ [node.name]) []) node.nodes
-        |> List.foldr (++) tests
+      let
+        getBefores nd =
+          case nd of
+            Before steps -> steps
+            _ -> []
+
+        getAfters nd =
+          case nd of
+            After steps -> steps
+            _ -> []
+
+        filterNodes nd =
+          case nd of
+            After _ -> False
+            Before _ -> False
+            _ -> True
+
+        beforeSteps =
+          List.map getBefores node.nodes
+            |> List.foldr (++) []
+
+        afterSteps =
+          List.map getAfters node.nodes
+            |> List.foldr (++) []
+
+        filteredNodes =
+          List.filter filterNodes node.nodes
+      in
+        List.map (flatten (path ++ [node.name]) []) filteredNodes
+          |> List.foldr (++) tests
+          |> List.map (\test -> { test | steps = beforeSteps ++ test.steps ++ afterSteps })
 
     TestNode node ->
       tests ++
@@ -115,3 +157,15 @@ test name steps =
 it : String -> List Assertion -> Node
 it =
   test
+
+
+{-|-}
+before : List Assertion -> Node
+before =
+  Before
+
+
+{-|-}
+after : List Assertion -> Node
+after =
+  After

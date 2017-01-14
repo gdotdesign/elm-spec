@@ -41,7 +41,9 @@ view model =
 specs : Node
 specs =
   describe "Spec.Steps"
-    [ describe ".click"
+    [ before [ assert.elementPresent "body" ]
+    , after [ assert.elementPresent "body" ]
+    , describe ".click"
       [ it "wait for the event to finish"
         [ assert.containsText { text = "Empty", selector = "div" }
         , click "div"
