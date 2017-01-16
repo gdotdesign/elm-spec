@@ -24,9 +24,13 @@ type alias State model msg =
   , finishedTests : List Test
   , appInit : () -> model
   , tests : List Test
+  , server : Server
   , counter : Int
   , app : model
   }
+
+
+type Server = Server
 
 
 {-| Messages for a test program.
@@ -85,6 +89,12 @@ update msg model =
               -- Take the nex step
               step :: remainingSteps ->
                 let
+                  mocks =
+                    test.requests
+
+                  ( server, mockResults ) =
+                    Native.Spec.mockHttpServer mocks model.server
+
                   -- Remove that step from the test
                   testWithoutStep =
                     { updatedTest | steps = remainingSteps }
@@ -96,7 +106,10 @@ update msg model =
                       |> Task.perform (Next << Just)
                 in
                   -- Execute
-                  ( { model | tests = testWithoutStep :: remainingTests }
+                  ( { model
+                    | tests = testWithoutStep :: remainingTests
+                    , server = server
+                    }
                   , stepTask
                   )
 
@@ -154,6 +167,7 @@ runWithProgram data tests =
     , view = view
     , init =
       ( { tests = (Spec.flatten [] [] tests)
+        , server = (Native.Spec.mockHttpServer [] Server)
         , update = data.update
         , appInit = data.init
         , finishedTests = []

@@ -2,6 +2,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   var task = _elm_lang$core$Native_Scheduler.nativeBinding
   var succeed = _elm_lang$core$Native_Scheduler.succeed
   var tuple0 = _elm_lang$core$Native_Utils.Tuple0
+  var tuple2 = _elm_lang$core$Native_Utils.Tuple2
 
   var error = function(message){
     return { ctor: 'Error', _0: message }
@@ -261,9 +262,27 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     })
   }
 
+  var mockHttpServer = function(mocks, oldServer){
+    if(oldServer && oldServer.ctor) { oldServer = null }
+    if(oldServer) { oldServer.stop() }
+
+    console.log(mocks)
+    var server = new MockHttpServer();
+    server.mocks = mocks
+    server.handle = function (request) {
+      console.log(request)
+      //request.setResponseHeader("Content-Type", "application/robot");
+      request.receive(200, "I am Bender, please insert girder!");
+    };
+    server.start()
+
+    return tuple2(server, oldServer ? oldServer.mocks : [])
+  }
+
   return {
     attributeContains: F3(attributeContains),
     attributeEquals: F3(attributeEquals),
+    mockHttpServer: F2(mockHttpServer),
     valueContains: F2(valueContains),
     dispatchEvent: F3(dispatchEvent),
     classPresent: F2(classPresent),
@@ -293,4 +312,4 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     click: click,
     raf: raf()
   }
-}()
+}();

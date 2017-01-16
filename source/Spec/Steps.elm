@@ -15,6 +15,7 @@ import Spec.Types exposing (..)
 
 import Task exposing (Task)
 import Json.Decode as Json
+import Native.HttpMock
 import Native.Spec
 
 

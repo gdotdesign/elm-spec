@@ -9,6 +9,7 @@ module Spec exposing
   , test
   , before
   , after
+  , http
   )
 
 {-| This module provides a way to test Elm apps end-to-end in the browser.
@@ -24,6 +25,9 @@ module Spec exposing
 
 # Hooks
 @docs before, after
+
+# Http
+@docs http
 -}
 import Spec.Types exposing (..)
 import Spec.Steps
@@ -38,6 +42,7 @@ type alias Test =
   , results : List Outcome
   , indentation : Int
   , name : String
+  , requests : List Request
   }
 
 
@@ -49,6 +54,15 @@ type alias Group =
   }
 
 
+type alias Request =
+  { url : String
+  , method : String
+  , response :
+    { status : Int
+    , body : String
+    }
+  }
+
 {-| Representation of a test tree (Node).
 -}
 type Node
@@ -56,6 +70,7 @@ type Node
   | TestNode Test
   | Before (List Assertion)
   | After (List Assertion)
+  | Http (List Request)
 
 
 {-| Turns a tree into a flat list of tests.
@@ -69,8 +84,16 @@ flatten path tests node =
     After steps ->
       tests
 
+    Http mocks ->
+      tests
+
     GroupNode node ->
       let
+        getRequests nd =
+          case nd of
+            Http requests -> requests
+            _ -> []
+
         getBefores nd =
           case nd of
             Before steps -> steps
@@ -97,10 +120,18 @@ flatten path tests node =
 
         filteredNodes =
           List.filter filterNodes node.nodes
+
+        requests =
+          List.map getRequests node.nodes
+            |> List.foldr (++) []
       in
         List.map (flatten (path ++ [node.name]) []) filteredNodes
           |> List.foldr (++) tests
-          |> List.map (\test -> { test | steps = beforeSteps ++ test.steps ++ afterSteps })
+          |> List.map (\test ->
+            { test
+            | steps = beforeSteps ++ test.steps ++ afterSteps
+            , requests = test.requests ++ requests
+            })
 
     TestNode node ->
       tests ++
@@ -147,6 +178,7 @@ test name steps =
   TestNode
     { indentation = 0
     , steps = steps
+    , requests = []
     , results = []
     , name = name
     }
@@ -169,3 +201,9 @@ before =
 after : List Assertion -> Node
 after =
   After
+
+
+{-|-}
+http : List Request -> Node
+http =
+  Http
