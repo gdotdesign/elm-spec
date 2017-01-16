@@ -3,6 +3,17 @@
 
 End-to-end testing for your Elm apps and components.
 
+## Features
+* Can test apps or separate components
+* `Task` based steps and assertions (allows createing custom ones easily) 
+* DOM steps and assertions (`click`, `containsText`, `valueEquals`, etc...)
+* Mock HTTP requests and report not mocked requests
+* `before` / `after` hooks
+* Run tests in the console (via _jsdom_)
+* Run tests with `elm-reactor` with HTML Report 
+* Run files one at a time `elm-spec spec/SomeSpec.elm`
+* Run tests one at a time `elm-spec spec/SomeSpec.elm:2`
+
 ## CLI
 You can install the CLI with either of the following commands:
 
