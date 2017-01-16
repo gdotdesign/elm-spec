@@ -45,6 +45,7 @@ var localStorage = new LocalStorage(temp.mkdirSync());
 var run = function(file) {
   return function(callback){
     render(file, function(result, filename){
+
       console.log(file)
       if(result){
         console.log(result)
@@ -82,6 +83,17 @@ var run = function(file) {
                         console.log("   " + result.message.bgRed)
                     }
                   })
+
+                  if(test.mockedRequests.length || test.notMockedRequests.length) {
+                    console.log("   Requests:")
+                    test.mockedRequests.forEach(function(req){
+                      console.log(("     ✔ " + req.method + " - " + req.url).green)
+                    })
+
+                    test.notMockedRequests.forEach(function(req){
+                      console.log(("     ✘ " + req.method + " - " + req.url).red)
+                    })
+                  }
                 })
                 console.log("")
                 callback(null, results)
@@ -114,7 +126,23 @@ globby(['spec/**Spec.elm']).then(paths => {
       return memo + test.results.filter(function(result){ return result.outcome == 'pass' }).length
     }, 0)
 
-    console.log(`${allresults.length} files ${results.length} tests: ${steps} steps ${successfull} successfull ${failed} failed ${errored} errored`)
-    process.exit(failed || errored ? 1 : 0)
+    var requests = results.reduce(function(memo, test) {
+      return memo + test.mockedRequests.length + test.notMockedRequests.length
+    }, 0)
+
+    var called = results.reduce(function(memo, test) {
+      return memo + test.mockedRequests.length
+    }, 0)
+
+    var notcalled = results.reduce(function(memo, test) {
+      return memo + test.notMockedRequests.length
+    }, 0)
+
+    console.log(`
+${allresults.length} files ${results.length} tests:
+  ${steps} steps ${successfull} successfull ${failed} failed ${errored} errored
+  ${requests} requests ${called} called requests ${notcalled} not called requests
+`)
+    process.exit(failed || errored || notcalled ? 1 : 0)
   })
 });

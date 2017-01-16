@@ -43,6 +43,7 @@ type alias Test =
   , indentation : Int
   , name : String
   , requests : List Request
+  , id : Int
   }
 
 
@@ -181,6 +182,7 @@ test name steps =
     , requests = []
     , results = []
     , name = name
+    , id = -1
     }
 
 

@@ -24,13 +24,9 @@ type alias State model msg =
   , finishedTests : List Test
   , appInit : () -> model
   , tests : List Test
-  , server : Server
   , counter : Int
   , app : model
   }
-
-
-type Server = Server
 
 
 {-| Messages for a test program.
@@ -89,11 +85,8 @@ update msg model =
               -- Take the nex step
               step :: remainingSteps ->
                 let
-                  mocks =
-                    test.requests
-
-                  ( server, mockResults ) =
-                    Native.Spec.mockHttpServer mocks model.server
+                  _ =
+                    Native.Spec.mockHttpRequests test
 
                   -- Remove that step from the test
                   testWithoutStep =
@@ -106,10 +99,7 @@ update msg model =
                       |> Task.perform (Next << Just)
                 in
                   -- Execute
-                  ( { model
-                    | tests = testWithoutStep :: remainingTests
-                    , server = server
-                    }
+                  ( { model | tests = testWithoutStep :: remainingTests }
                   , stepTask
                   )
 
@@ -161,23 +151,28 @@ run tests =
 -}
 runWithProgram : Prog model msg -> Node -> Program Never (State model msg) (Msg msg)
 runWithProgram data tests =
-  Html.program
-    { subscriptions = (\model -> Sub.map App (data.subscriptions model.app))
-    , update = update
-    , view = view
-    , init =
-      ( { tests = (Spec.flatten [] [] tests)
-        , server = (Native.Spec.mockHttpServer [] Server)
-        , update = data.update
-        , appInit = data.init
-        , finishedTests = []
-        , app = data.init ()
-        , view = data.view
-        , counter = 0
-        }
-      , perform (Next Nothing)
-      )
-    }
+  let
+    processedTests =
+      tests
+      |> Spec.flatten [] []
+      |> List.indexedMap (\index item -> { item | id = index })
+  in
+    Html.program
+      { subscriptions = (\model -> Sub.map App (data.subscriptions model.app))
+      , update = update
+      , view = view
+      , init =
+        ( { tests = processedTests
+          , update = data.update
+          , appInit = data.init
+          , finishedTests = []
+          , app = data.init ()
+          , view = data.view
+          , counter = 0
+          }
+        , perform (Next Nothing)
+        )
+      }
 
 
 {-| Sends the report to the CLI when running tests in a terminal.
@@ -185,6 +180,18 @@ runWithProgram data tests =
 report : List Test -> Cmd (Msg msg)
 report tests =
   let
+    mockedRequests test =
+      Native.Spec.getMockResults test
+
+    notMockedRequests test =
+      List.filter (\item -> not (List.member item (mockedRequests test))) test.requests
+
+    encodeMock mock =
+      Json.object
+        [ ( "method", Json.string mock.method)
+        , ( "url", Json.string mock.url )
+        ]
+
     encodeResult result =
       case result of
         Pass message ->
@@ -209,6 +216,8 @@ report tests =
       Json.object
         [ ( "name", Json.string test.name )
         , ( "results", Json.list (List.map encodeResult test.results) )
+        , ( "mockedRequests", Json.list (List.map encodeMock (mockedRequests test)))
+        , ( "notMockedRequests", Json.list (List.map encodeMock (notMockedRequests test)))
         ]
 
     data =

@@ -3,6 +3,8 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   var succeed = _elm_lang$core$Native_Scheduler.succeed
   var tuple0 = _elm_lang$core$Native_Utils.Tuple0
   var tuple2 = _elm_lang$core$Native_Utils.Tuple2
+  var toArray = _elm_lang$core$Native_List.toArray
+  var fromArray = _elm_lang$core$Native_List.fromArray
 
   var error = function(message){
     return { ctor: 'Error', _0: message }
@@ -262,27 +264,38 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     })
   }
 
-  var mockHttpServer = function(mocks, oldServer){
-    if(oldServer && oldServer.ctor) { oldServer = null }
-    if(oldServer) { oldServer.stop() }
+  var mockResults = {}
 
-    console.log(mocks)
-    var server = new MockHttpServer();
-    server.mocks = mocks
-    server.handle = function (request) {
-      console.log(request)
-      //request.setResponseHeader("Content-Type", "application/robot");
-      request.receive(200, "I am Bender, please insert girder!");
-    };
-    server.start()
+  var mockHttpRequests = function(test){
+    var requests = toArray(test.requests)
+    if(!mockResults[test.id]){ mockResults[test.id] = [] }
 
-    return tuple2(server, oldServer ? oldServer.mocks : [])
+    HttpMock.setup()
+    HttpMock.mock(function(request, response){
+      var matching = requests.filter(function(mock){
+        return request.method() === mock.method && request.url() === mock.url
+      })
+      if (matching.length === 1) {
+        var mock = matching[0]
+        response.status(mock.response.status)
+        response.body(mock.response.body)
+        mockResults[test.id].push(mock)
+        return response
+      }
+    })
+
+    return tuple0;
+  }
+
+  var getMockResults = function(test) {
+    return fromArray(mockResults[test.id] || []);
   }
 
   return {
     attributeContains: F3(attributeContains),
     attributeEquals: F3(attributeEquals),
-    mockHttpServer: F2(mockHttpServer),
+    mockHttpRequests: mockHttpRequests,
+    getMockResults: getMockResults,
     valueContains: F2(valueContains),
     dispatchEvent: F3(dispatchEvent),
     classPresent: F2(classPresent),
