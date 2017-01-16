@@ -53,6 +53,13 @@ specs =
         , assert.containsText { text = "amet,", selector = "div" }
         , assert.not.containsText { text = "blah", selector = "div" }
         ]
+      , it "should check if element contains text"
+        [ stepGroup "Contains text..."
+          [ assert.containsText { text = "Lorem", selector = "div" }
+          , assert.containsText { text = "amet,", selector = "div" }
+          , assert.not.containsText { text = "blah", selector = "div" }
+          ]
+        ]
       ]
     , describe ".classPresent"
       [ it "should check if element have the given class"

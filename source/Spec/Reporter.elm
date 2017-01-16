@@ -88,16 +88,6 @@ renderTest model =
       [ stylesheet.class Styles.Row ] (title ++ results ++ requestResults)
 
 
-{-| Gets the message from an outcome.
--}
-outcomeToString : Outcome -> String
-outcomeToString outcome =
-  case outcome of
-    Error message -> message
-    Pass message -> message
-    Fail message -> message
-
-
 {-| Renders the test results.
 -}
 render : List Test -> Html.Html msg

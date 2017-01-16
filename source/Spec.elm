@@ -10,6 +10,7 @@ module Spec exposing
   , before
   , after
   , http
+  , stepGroup
   )
 
 {-| This module provides a way to test Elm apps end-to-end in the browser.
@@ -20,6 +21,9 @@ module Spec exposing
 # Grouping
 @docs group, context, describe
 
+# Grouping steps / assertions
+@docs stepGroup
+
 # Defining Tests
 @docs it, test
 
@@ -29,6 +33,7 @@ module Spec exposing
 # Http
 @docs http
 -}
+import Spec.Assertions exposing (pass, fail, error)
 import Spec.Types exposing (..)
 import Spec.Steps
 
@@ -209,3 +214,49 @@ after =
 http : List Request -> Node
 http =
   Http
+
+
+{-| Groups the given steps into a step group. Step groups makes it easy to
+run multiple steps under one message.
+-}
+stepGroup : String -> List Assertion -> Assertion
+stepGroup message steps =
+  let
+    isError outcome =
+      case outcome of
+        Error _ -> True
+        _ -> False
+
+    isFail outcome =
+      case outcome of
+        Fail _ -> True
+        _ -> False
+
+    mapTask task =
+      Task.andThen (\_ -> task) Native.Spec.raf
+
+    handleResults results =
+      if List.any isError results then
+        let
+          errorMessage =
+            List.filter isError results
+              |> List.head
+              |> Maybe.map outcomeToString
+              |> Maybe.withDefault ""
+        in
+          Task.succeed (error (message ++ ": " ++ errorMessage))
+      else if List.any isFail results then
+        let
+          failureMessage =
+            List.filter isFail results
+              |> List.head
+              |> Maybe.map outcomeToString
+              |> Maybe.withDefault ""
+        in
+          Task.succeed (fail (message ++ ": " ++ failureMessage))
+      else
+        Task.succeed (pass message)
+  in
+    List.map mapTask steps
+      |> Task.sequence
+      |> Task.andThen handleResults

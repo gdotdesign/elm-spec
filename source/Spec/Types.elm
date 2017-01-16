@@ -55,3 +55,13 @@ type alias ClassData =
 -}
 type alias StyleData =
   { style : String, value : String, selector : String }
+
+
+{-| Gets the message from an outcome.
+-}
+outcomeToString : Outcome -> String
+outcomeToString outcome =
+  case outcome of
+    Error message -> message
+    Pass message -> message
+    Fail message -> message
