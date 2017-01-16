@@ -84,8 +84,14 @@ main =
 And open the file in `elm-reactor` or run it wit the `elm-spec` command:
 
 ```
-Example / clicking on the div should change the text
-  Element div contains text "Empty"
-  Clicked: div
-  Element div contains text "Something"
+$ elm-spec spec/ExampleSpec.elm
+spec/ExampleSpec.elm
+ Example / clicking on the div should change the text
+   Element div contains text "Empty"
+   Clicked: div
+   Element div contains text "Something"
+
+1 files 1 tests:
+  3 steps 3 successfull 0 failed 0 errored
+  0 requests 0 called 0 not called 0 unhandled
 ```
