@@ -52,14 +52,40 @@ renderOutcome outcome =
 renderTest : Test -> Html.Html msg
 renderTest model =
   let
+    requests =
+      Native.Spec.getMockResults model
+
+    notCalled =
+      List.filter
+        (\item -> not (List.member item requests.called))
+        model.requests
+
     title =
       [ strong [] [ text model.name ] ]
 
     results =
       List.map renderOutcome model.results
+
+    renderRequest class request =
+      div
+        [ stylesheet.class class ]
+        [ text (request.method ++ " - " ++ request.url) ]
+
+    requestResults =
+      if List.isEmpty requests.called
+      && List.isEmpty requests.unhandled
+      && List.isEmpty notCalled
+      then
+        []
+      else
+        [ div [ stylesheet.class Styles.SubTitle ] [ text "Requets:" ]]
+        ++ (List.map (renderRequest Styles.CalledRequest) requests.called)
+        ++ (List.map (renderRequest Styles.NotCalledRequest) notCalled)
+        ++ (List.map (renderRequest Styles.UnhandledRequest) requests.unhandled)
+
   in
-  div
-    [ stylesheet.class Styles.Row ] (title ++ results)
+    div
+      [ stylesheet.class Styles.Row ] (title ++ results ++ requestResults)
 
 
 {-| Gets the message from an outcome.
