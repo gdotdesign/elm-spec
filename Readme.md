@@ -84,6 +84,7 @@ main =
 And open the file in `elm-reactor` or run it wit the `elm-spec` command:
 
 ```
+$ elm-spec spec/ExampleSpec.elm
 spec/ExampleSpec.elm
  Example / clicking on the div should change the text
    Element div contains text "Empty"
