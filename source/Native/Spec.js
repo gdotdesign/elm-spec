@@ -5,6 +5,8 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   var tuple2 = _elm_lang$core$Native_Utils.Tuple2
   var toArray = _elm_lang$core$Native_List.toArray
   var fromArray = _elm_lang$core$Native_List.fromArray
+  var nothing = _elm_lang$core$Maybe$Nothing
+  var just = _elm_lang$core$Maybe$Just
 
   var error = function(message){
     return { ctor: 'Error', _0: message }
@@ -267,6 +269,14 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   var mockResults = {}
   var unhandledResults = {}
 
+  var getTestId = function(){
+    if(window._elmSpecTestId){
+      return just(window._elmSpecTestId - 1)
+    } else {
+      return nothing
+    }
+  }
+
   var mockHttpRequests = function(test){
     var requests = toArray(test.requests)
 
@@ -323,6 +333,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     clearValue: clearValue,
     setValue: F2(setValue),
     urlEquals: urlEquals,
+    getTestId: getTestId,
     getTitle: getTitle,
     getUrl: getUrl,
     ansiToHtml: function(value){

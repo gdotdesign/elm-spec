@@ -156,13 +156,18 @@ runWithProgram data tests =
       tests
       |> Spec.flatten [] []
       |> List.indexedMap (\index item -> { item | id = index })
+
+    testToRun =
+      case Native.Spec.getTestId () of
+        Just id -> List.filter (.id >> ((==) id)) processedTests
+        Nothing -> processedTests
   in
     Html.program
       { subscriptions = (\model -> Sub.map App (data.subscriptions model.app))
       , update = update
       , view = view
       , init =
-        ( { tests = processedTests
+        ( { tests = testToRun
           , update = data.update
           , appInit = data.init
           , finishedTests = []
@@ -215,6 +220,7 @@ report tests =
     encodeTest test =
       Json.object
         [ ( "name", Json.string test.name )
+        , ( "id", Json.int test.id )
         , ( "results", Json.list (List.map encodeResult test.results) )
         , ( "unhandledRequests"
           , mockedRequests test

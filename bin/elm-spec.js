@@ -8,6 +8,7 @@ var globby = require('globby')
 var colors = require('colors')
 var jsdom = require('jsdom')
 var async = require('async')
+var fs = require('fs')
 
 var elmExecutable = which.sync('elm-make')
 
@@ -42,23 +43,25 @@ var render = function(file, callback) {
 var sessionStorage = new LocalStorage(temp.mkdirSync());
 var localStorage = new LocalStorage(temp.mkdirSync());
 
-var run = function(file) {
+var run = function(file, testId) {
   return function(callback){
     render(file, function(result, filename){
-
       console.log(file)
       if(result){
         console.log(result)
         callback(null, [])
       } else {
+        var testIdFileContents = "window._elmSpecTestId = " + testId + ";"
+        var testIdFile = temp.openSync({ suffix: '.js' }).path
+        fs.writeFileSync(testIdFile, testIdFileContents)
+
         jsdom.env(
           "<html><title>Elm-Spec</title></html>",
-          [__dirname + "/lib/raf.js",filename],
+          [__dirname + "/lib/raf.js",testIdFile,filename],
           { virtualConsole: jsdom.createVirtualConsole().sendTo(console),
             cookieJar: jsdom.createCookieJar(),
           },
           function (err, window) {
-
             window.sessionStorage = sessionStorage
             window.localStorage = localStorage
             sessionStorage.clear()
@@ -70,6 +73,7 @@ var run = function(file) {
               var app = window.Elm.Main.embed(window.document.body)
               window._elmSpecReport = function(results){
                 results.forEach(function(test){
+                  test.path = file
                   console.log(" " + test.name.bold)
                   test.results.forEach(function(result){
                     switch(result.outcome) {
@@ -112,8 +116,21 @@ var run = function(file) {
   }
 }
 
-globby(['spec/**Spec.elm']).then(paths => {
-  var files = paths.map(path => { return run(path) })
+var args = process.argv.slice(2)
+var glob
+var id
+
+if(args.length){
+  var file = args[0]
+  var parts = file.split(':')
+  glob = parts[0]
+  id = parts[1]
+} else {
+  glob = ['spec/**Spec.elm']
+}
+
+globby(glob).then(paths => {
+  var files = paths.map(path => { return run(path, id) })
   async.series(files, function(errors, allresults){
     var results = allresults.reduce(function(memo, a) { return memo.concat(a) }, [])
     var steps = results.reduce(function(memo, test) {
@@ -147,6 +164,21 @@ globby(['spec/**Spec.elm']).then(paths => {
     var unhandled = results.reduce(function(memo, test) {
       return memo + test.unhandledRequests.length
     }, 0)
+
+    var failedTest = results.filter(function(test){
+      var failedSteps = test.results.filter(function(step){
+        return step.outcome === 'fail' || step.outcome === 'error'
+      }).length
+
+      return failedSteps > 0 || test.notMockedRequests.length > 0 || test.unhandledRequests.length > 0
+    })
+
+    if(failedTest.length) {
+      console.log("Failed tests:")
+      failedTest.forEach(function(test){
+        console.log(("elm-spec " + test.path + ":" + (test.id + 1)).red + (" # " + test.name).cyan)
+      })
+    }
 
     console.log(`
 ${allresults.length} files ${results.length} tests:
