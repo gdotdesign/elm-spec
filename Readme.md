@@ -6,6 +6,7 @@ End-to-end testing for your Elm apps and components.
 ## Features
 * Can test apps or separate components
 * `Task` based steps and assertions (allows createing custom ones easily) 
+* Create composite steps from other steps
 * DOM steps and assertions (`click`, `containsText`, `valueEquals`, etc...)
 * Mock HTTP requests and report not mocked requests
 * `before` / `after` hooks
