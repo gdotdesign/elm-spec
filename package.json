@@ -1,6 +1,6 @@
 {
   "name": "elm-spec",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Integration testing in Elm.",
   "repository": {
     "type": "git",

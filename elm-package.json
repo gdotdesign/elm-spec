@@ -1,5 +1,5 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "summary": "Integration testing in Elm.",
   "repository": "https://github.com/gdotdesign/elm-spec.git",
   "license": "BSD3",
