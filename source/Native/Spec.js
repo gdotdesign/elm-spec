@@ -265,10 +265,13 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   }
 
   var mockResults = {}
+  var unhandledResults = {}
 
   var mockHttpRequests = function(test){
     var requests = toArray(test.requests)
+
     if(!mockResults[test.id]){ mockResults[test.id] = [] }
+    if(!unhandledResults[test.id]){ unhandledResults[test.id] = [] }
 
     HttpMock.setup()
     HttpMock.mock(function(request, response){
@@ -281,6 +284,12 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
         response.body(mock.response.body)
         mockResults[test.id].push(mock)
         return response
+      } else {
+        unhandledResults[test.id].push({
+          method: request.method(),
+          url: request.url(),
+          response: { statue: 200, body: "" }
+        })
       }
     })
 
@@ -288,7 +297,10 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   }
 
   var getMockResults = function(test) {
-    return fromArray(mockResults[test.id] || []);
+    return {
+      called: fromArray(mockResults[test.id] || []),
+      unhandled: fromArray(unhandledResults[test.id] || [])
+    }
   }
 
   return {

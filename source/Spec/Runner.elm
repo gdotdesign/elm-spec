@@ -184,7 +184,7 @@ report tests =
       Native.Spec.getMockResults test
 
     notMockedRequests test =
-      List.filter (\item -> not (List.member item (mockedRequests test))) test.requests
+      List.filter (\item -> not (List.member item (.called (mockedRequests test)))) test.requests
 
     encodeMock mock =
       Json.object
@@ -216,7 +216,18 @@ report tests =
       Json.object
         [ ( "name", Json.string test.name )
         , ( "results", Json.list (List.map encodeResult test.results) )
-        , ( "mockedRequests", Json.list (List.map encodeMock (mockedRequests test)))
+        , ( "unhandledRequests"
+          , mockedRequests test
+            |> .unhandled
+            |> List.map encodeMock
+            |> Json.list
+          )
+        , ( "mockedRequests"
+          , mockedRequests test
+            |> .called
+            |> List.map encodeMock
+            |> Json.list
+          )
         , ( "notMockedRequests", Json.list (List.map encodeMock (notMockedRequests test)))
         ]
 

@@ -84,7 +84,9 @@ var run = function(file) {
                     }
                   })
 
-                  if(test.mockedRequests.length || test.notMockedRequests.length) {
+                  if(test.mockedRequests.length ||
+                     test.notMockedRequests.length ||
+                     test.unhandledRequests.length) {
                     console.log("   Requests:")
                     test.mockedRequests.forEach(function(req){
                       console.log(("     ✔ " + req.method + " - " + req.url).green)
@@ -92,6 +94,10 @@ var run = function(file) {
 
                     test.notMockedRequests.forEach(function(req){
                       console.log(("     ✘ " + req.method + " - " + req.url).red)
+                    })
+
+                    test.unhandledRequests.forEach(function(req){
+                      console.log(("     ? " + req.method + " - " + req.url).bgRed)
                     })
                   }
                 })
@@ -127,7 +133,7 @@ globby(['spec/**Spec.elm']).then(paths => {
     }, 0)
 
     var requests = results.reduce(function(memo, test) {
-      return memo + test.mockedRequests.length + test.notMockedRequests.length
+      return memo + test.mockedRequests.length + test.notMockedRequests.length + test.unhandledRequests.length
     }, 0)
 
     var called = results.reduce(function(memo, test) {
@@ -138,11 +144,15 @@ globby(['spec/**Spec.elm']).then(paths => {
       return memo + test.notMockedRequests.length
     }, 0)
 
+    var unhandled = results.reduce(function(memo, test) {
+      return memo + test.unhandledRequests.length
+    }, 0)
+
     console.log(`
 ${allresults.length} files ${results.length} tests:
   ${steps} steps ${successfull} successfull ${failed} failed ${errored} errored
-  ${requests} requests ${called} called requests ${notcalled} not called requests
+  ${requests} requests ${called} called ${notcalled} not called ${unhandled} unhandled
 `)
-    process.exit(failed || errored || notcalled ? 1 : 0)
+    process.exit(failed || errored || notcalled || unhandled ? 1 : 0)
   })
 });
