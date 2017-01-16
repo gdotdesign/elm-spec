@@ -55,13 +55,23 @@ var run = function(file, testId) {
         var testIdFile = temp.openSync({ suffix: '.js' }).path
         fs.writeFileSync(testIdFile, testIdFileContents)
 
-        jsdom.env(
-          "<html><title>Elm-Spec</title></html>",
-          [__dirname + "/lib/raf.js",testIdFile,filename],
-          { virtualConsole: jsdom.createVirtualConsole().sendTo(console),
-            cookieJar: jsdom.createCookieJar(),
-          },
-          function (err, window) {
+        jsdom.env({
+          virtualConsole: jsdom.createVirtualConsole().sendTo(console),
+          cookieJar: jsdom.createCookieJar(),
+          url: "http://localhost:8080/",
+          scripts: [
+            "file:///" + __dirname + "/lib/raf.js",
+            "file:///" + testIdFile,
+            "file:///" + filename
+          ],
+          html: `
+            <html>
+              <head>
+                <base href='http://localhost:8080/'></base>
+                <title>Elm-Spec</title>
+              </head>
+            </html>`,
+          done: function (err, window) {
             window.sessionStorage = sessionStorage
             window.localStorage = localStorage
             sessionStorage.clear()
@@ -104,13 +114,16 @@ var run = function(file, testId) {
                       console.log(("     ? " + req.method + " - " + req.url).bgRed)
                     })
                   }
+
+                  console.log("")
                 })
+
                 console.log("")
                 callback(null, results)
               }
             }
           }
-        )
+        })
       }
     })
   }
