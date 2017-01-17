@@ -154,7 +154,7 @@ runWithProgram data tests =
   let
     processedTests =
       tests
-      |> Spec.flatten [] []
+      |> Spec.flatten []
       |> List.indexedMap (\index item -> { item | id = index })
 
     testToRun =
@@ -221,7 +221,7 @@ report tests =
       Json.object
         [ ( "name", Json.string test.name )
         , ( "id", Json.int test.id )
-        , ( "indentation", Json.int test.indentation )
+        , ( "path", Json.list (List.map Json.string test.path))
         , ( "results", Json.list (List.map encodeResult test.results) )
         , ( "unhandledRequests"
           , mockedRequests test

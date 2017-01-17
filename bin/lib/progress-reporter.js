@@ -4,13 +4,28 @@ const indentString = require('indent-string')
 const pad = require('pad')
 
 class Reporter {
-  /*
-  results =
-    [ { file = "relatie-path-to-file", tests = [{}] }
-    ]
-  */
   constructor(results) {
     this.results = results
+  }
+
+  get tree() {
+    var tree = new Map()
+
+    this.results.forEach(file => {
+      var leaf = new Map()
+      tree.set("◎ " + file.file, leaf)
+
+      file.tests.forEach(test => {
+        var endLeaf = test.path.reduce((memo, item) => {
+          if(!memo.has(item)) { memo.set(item, new Map()) }
+          return memo.get(item)
+        }, leaf)
+
+        endLeaf.set(test.id, test)
+      })
+    })
+
+    return tree
   }
 
   get tests() {
@@ -121,7 +136,7 @@ class Reporter {
         return item.tests.indexOf(test) >= 0
       })[0] || { file: "" }).file
 
-      return "elm-spec " + file + ":" + (test.id + 1)
+      return " elm-spec " + file + ":" + (test.id + 1)
     })
 
     var names = this.failedTests.map( test => {
@@ -147,46 +162,69 @@ class Reporter {
 }
 
 class DocumentationReporter extends Reporter {
-  report() {
-    this.results.forEach(file => {
-      file.tests.forEach(test => {
-        var indent = (test.indentation * 2) - 2
+  reportMap(map, newLine = false ) {
+    var result = []
 
-        console.log(indentString(test.name.bold, indent))
-
-        test.results.forEach(function(result){
-          switch(result.outcome) {
-            case "pass":
-              console.log(indentString(result.message.green, indent + 2))
-              break
-            case "fail":
-              console.log(indentString(result.message.red, indent + 2))
-              break
-            case "error":
-              console.log(indentString(result.message.bgRed, indent + 2))
-          }
-        })
-
-        if(test.mockedRequests.length ||
-           test.notMockedRequests.length ||
-           test.unhandledRequests.length) {
-          console.log(indentString("Requests:", indent + 2))
-          test.mockedRequests.forEach(function(req){
-            console.log(indentString(("✔ " + req.method + " - " + req.url).green, indent + 3))
-          })
-
-          test.notMockedRequests.forEach(function(req){
-            console.log(indentString(("✘ " + req.method + " - " + req.url).red, indent + 3))
-          })
-
-          test.unhandledRequests.forEach(function(req){
-            console.log(indentString(("? " + req.method + " - " + req.url).bgRed, indent + 3))
-          })
-        }
-
-        console.log("")
-      })
+    map.forEach((value, key) => {
+      if(value instanceof Map) {
+        result.push(key)
+        result.push(indentString(this.reportMap(value), 2))
+        if(newLine) { result.push("") }
+      } else {
+        result.push(this.reportTest(value))
+      }
     })
+
+    return result.join("\n")
+  }
+
+  reportTest(test) {
+    var isFailed =
+      test.results.filter(step => step.outcome != 'pass').length ||
+      test.notMockedRequests.length ||
+      test.unhandledRequests.length
+
+    var prefix = isFailed ? "✘" : "✔"
+
+    var result = [prefix + " " + test.name]
+
+    test.results.forEach(step =>{
+      switch(step.outcome) {
+        case "pass":
+          result.push(indentString(step.message.green, 2))
+          break
+        case "fail":
+          result.push(indentString(step.message.red, 2))
+          break
+        case "error":
+          result.push(indentString(step.message.bgRed, 2))
+      }
+    })
+
+    if(test.mockedRequests.length ||
+       test.notMockedRequests.length ||
+       test.unhandledRequests.length) {
+
+      result.push(indentString("Requests:", 2))
+
+      test.mockedRequests.forEach( req => {
+        result.push(indentString(("✔ " + req.method + " - " + req.url).green, 4))
+      })
+
+      test.notMockedRequests.forEach( req => {
+        result.push(indentString(("✘ " + req.method + " - " + req.url).red, 4))
+      })
+
+      test.unhandledRequests.forEach( req => {
+        result.push(indentString(("? " + req.method + " - " + req.url).bgRed, 4))
+      })
+    }
+
+    return result.join("\n")
+  }
+
+  report() {
+    console.log(this.reportMap(this.tree, true))
     super.report()
   }
 }
@@ -202,4 +240,4 @@ class ProgressReporter extends Reporter {
   }
 }
 
-module.exports = ProgressReporter
+module.exports = DocumentationReporter

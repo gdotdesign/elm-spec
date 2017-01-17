@@ -43,11 +43,11 @@ import Task exposing (Task)
 {-| Representation of a test.
 -}
 type alias Test =
-  { steps : List Assertion
+  { requests : List Request
   , results : List Outcome
-  , indentation : Int
+  , steps : List Assertion
+  , path : List String
   , name : String
-  , requests : List Request
   , id : Int
   }
 
@@ -60,30 +60,34 @@ type alias Group =
   }
 
 
+{-| Representatio of a mocked request.
+-}
 type alias Request =
-  { url : String
-  , method : String
+  { method : String
+  , url : String
   , response :
     { status : Int
     , body : String
     }
   }
 
+
 {-| Representation of a test tree (Node).
 -}
 type Node
-  = GroupNode Group
-  | TestNode Test
-  | Before (List Assertion)
+  = Before (List Assertion)
   | After (List Assertion)
   | Http (List Request)
+  | GroupNode Group
+  | TestNode Test
 
 
 {-| Turns a tree into a flat list of tests.
 -}
-flatten : List String -> List Test -> Node -> List Test
-flatten path tests node =
+flatten : List Test -> Node -> List Test
+flatten tests node =
   case node of
+    -- There branches are processed in the group below
     Before steps ->
       tests
 
@@ -93,6 +97,10 @@ flatten path tests node =
     Http mocks ->
       tests
 
+    {- Process a group node:
+       * add before and after hooks to test
+       * add requests to tests
+    -}
     GroupNode node ->
       let
         getRequests nd =
@@ -131,21 +139,17 @@ flatten path tests node =
           List.map getRequests node.nodes
             |> List.foldr (++) []
       in
-        List.map (flatten (path ++ [node.name]) []) filteredNodes
+        List.map (flatten []) filteredNodes
           |> List.foldr (++) tests
           |> List.map (\test ->
             { test
             | steps = beforeSteps ++ test.steps ++ afterSteps
             , requests = test.requests ++ requests
+            , path = [node.name] ++ test.path
             })
 
     TestNode node ->
-      tests ++
-        [ { node
-          | name = (String.join " / " (path ++ [node.name]))
-          , indentation = List.length path
-          }
-        ]
+      tests ++ [ node ]
 
 {-| Groups the given tests and groups into a new group.
 
@@ -182,11 +186,11 @@ describe =
 test : String -> List Assertion -> Node
 test name steps =
   TestNode
-    { indentation = 0
-    , steps = steps
+    { steps = steps
     , requests = []
     , results = []
     , name = name
+    , path = []
     , id = -1
     }
 
