@@ -221,6 +221,7 @@ report tests =
       Json.object
         [ ( "name", Json.string test.name )
         , ( "id", Json.int test.id )
+        , ( "indentation", Json.int test.indentation )
         , ( "results", Json.list (List.map encodeResult test.results) )
         , ( "unhandledRequests"
           , mockedRequests test
