@@ -248,7 +248,7 @@ stepGroup message steps =
               |> Maybe.map outcomeToString
               |> Maybe.withDefault ""
         in
-          Task.succeed (error (message ++ ": " ++ errorMessage))
+          Task.succeed (error (message ++ ":\n  " ++ errorMessage))
       else if List.any isFail results then
         let
           failureMessage =
@@ -257,7 +257,7 @@ stepGroup message steps =
               |> Maybe.map outcomeToString
               |> Maybe.withDefault ""
         in
-          Task.succeed (fail (message ++ ": " ++ failureMessage))
+          Task.succeed (fail (message ++ ":\n  " ++ failureMessage))
       else
         Task.succeed (pass message)
   in
