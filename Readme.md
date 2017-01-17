@@ -5,13 +5,13 @@ End-to-end testing for your Elm apps and components.
 
 ## Features
 * Can test apps or separate components
-* `Task` based steps and assertions (allows createing custom ones easily) 
+* `Task` based steps and assertions (allows createing custom ones easily)
 * Create composite steps from other steps
 * DOM steps and assertions (`click`, `containsText`, `valueEquals`, etc...)
 * Mock HTTP requests and report not mocked requests
 * `before` / `after` hooks
 * Run tests in the console (via _jsdom_)
-* Run tests with `elm-reactor` with HTML Report 
+* Run tests with `elm-reactor` with HTML Report
 * Run files one at a time `elm-spec spec/SomeSpec.elm`
 * Run tests one at a time `elm-spec spec/SomeSpec.elm:2`
 
@@ -19,6 +19,16 @@ End-to-end testing for your Elm apps and components.
 You can install the CLI with either of the following commands:
 
 `npm install elm-spec -g` or `yarn global add elm-spec`
+
+```
+elm-spec [glob pattern or file:testID] -f format
+
+Options:
+  --format, -f  Reporting format
+               [choices: "documentation", "progress"] [default: "documentation"]
+  --help        Show help                                              [boolean]
+
+```
 
 ## Adding the package
 Add `gdotdesign/elm-spec` as a dependency to your `elm-package.json`.
