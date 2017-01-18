@@ -242,9 +242,10 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
 
       for (var key in data) {
         if (data.hasOwnProperty(key)) {
-          console.log(key + " -> " + p[key]);
+          event[key] = data[key]
         }
       }
+
       element.dispatchEvent(event)
       return pass("Dispatched event " + bold(eventType) + " on element " + bold(selector))
     })

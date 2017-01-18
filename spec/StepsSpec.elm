@@ -4,16 +4,18 @@ import Spec.Runner exposing (..)
 import Spec.Steps exposing (..)
 import Spec exposing (..)
 
+import Html.Events exposing (onClick, on, keyCode)
 import Html.Attributes exposing (attribute)
-import Html.Events exposing (onClick)
 import Html exposing (..)
 
-import Json.Encode as Json
+import Json.Encode as JE
+import Json.Decode as JD
 
 type alias Model = String
 
 type Msg
-  = Set
+  = SetValue Int
+  | Set
 
 
 init : () -> Model
@@ -24,6 +26,9 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
+    SetValue value ->
+      ( toString value, Cmd.none )
+
     Set ->
       ( "Something", Cmd.none )
 
@@ -34,7 +39,7 @@ view model =
     [ div
       [ attribute "test" "test", onClick Set ]
       [ text model ]
-    , input [] []
+    , input [ on "keydown" (JD.map SetValue keyCode) ] []
     ]
 
 
@@ -75,8 +80,13 @@ specs =
     , describe ".dispatchEvent"
       [ it "should dispatch the given event"
         [ assert.containsText { text = "Empty", selector = "div" }
-        , dispatchEvent "click" (Json.object []) "div"
+        , dispatchEvent "click" (JE.object []) "div"
         , assert.containsText { text = "Something", selector = "div" }
+        ]
+      , it "should dispatch event with data"
+        [ assert.containsText { text = "Empty", selector = "div" }
+        , dispatchEvent "keydown" (JE.object [("keyCode", JE.int 13)]) "input"
+        , assert.containsText { text = "13", selector = "div" }
         ]
       ]
     ]
