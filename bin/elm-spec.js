@@ -4,6 +4,7 @@
 const globby = require('globby')
 const async = require('async')
 
+const cssstyle = require('./lib/cssstyle')
 const runner = require('./lib/runner')
 
 const argv =
