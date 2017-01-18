@@ -27,7 +27,7 @@ if(argv._.length){
   glob = parts[0]
   id = parts[1]
 } else {
-  glob = ['spec/**Spec.elm']
+  glob = ['spec/**/*Spec.elm']
 }
 
 globby(glob).then(paths => {
