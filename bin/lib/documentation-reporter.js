@@ -4,7 +4,7 @@ const indentString = require('indent-string')
 const Reporter = require('./reporter')
 
 class DocumentationReporter extends Reporter {
-  reportMap(map, newLine = false ) {
+  reportMap(map, newLine) {
     var result = []
 
     map.forEach((value, key) => {
