@@ -52,7 +52,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
       if(element.textContent.indexOf(value) >= 0) {
         return pass("Element " + bold(selector) + " contains text " + boldString(value))
       } else {
-        return fail("Element " + bold(selector) + " does not contain text " + boldString(value))
+        return fail("Elements " + bold(selector) + " text " + boldString(element.textContent) + " does not contain " + boldString(value))
       }
     })
   }
