@@ -124,14 +124,19 @@ update msg model =
 view : State model msg -> Html.Html (Msg msg)
 view model =
   let
-    node =
+    app =
+      ( toString model.counter, Html.map App (model.view model.app) )
+
+    nodes =
       if List.isEmpty model.tests then
-        ( "report", Spec.Reporter.render model.finishedTests )
+        [ app
+        , ( "report", Spec.Reporter.render model.finishedTests )
+        ]
       else
-        ( toString model.counter, Html.map App (model.view model.app) )
+        [ app ]
 
   in
-    Html.Keyed.node "testing-node-123456" [] [ node ]
+    Html.Keyed.node "testing-node-123456" [] nodes
 
 
 {-| Runs the given tests without an app / component.
