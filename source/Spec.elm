@@ -1,7 +1,7 @@
 module Spec exposing
-  ( Node
+  ( Outcome
+  , Node
   , Test
-  , flatten
   , group
   , context
   , describe
@@ -11,18 +11,28 @@ module Spec exposing
   , after
   , http
   , stepGroup
+  , assert
+  , steps
+  , run
+  , runWithProgram
   )
 
 {-| This module provides a way to test Elm apps end-to-end in the browser.
 
 # Types
-@docs Test, Node, flatten
+@docs Test, Node
 
 # Grouping
 @docs group, context, describe
 
 # Grouping steps / assertions
 @docs stepGroup
+
+# Assertions
+@docs Outcome, assert
+
+# Steps
+@docs steps
 
 # Defining Tests
 @docs it, test
@@ -32,124 +42,38 @@ module Spec exposing
 
 # Http
 @docs http
+
+# Running
+@docs run, runWithProgram
 -}
 import Spec.Assertions exposing (pass, fail, error)
+import Spec.Runner exposing (Prog, State, Msg)
 import Spec.Types exposing (..)
-import Spec.Steps
+import Spec.Native
 
 import Task exposing (Task)
-
+import Json.Decode as Json
 
 {-| Representation of a test.
 -}
 type alias Test =
-  { requests : List Request
-  , results : List Outcome
-  , steps : List Assertion
-  , path : List String
-  , name : String
-  , id : Int
-  }
+  Spec.Types.Test
 
 
-{-| Representation of a test group.
+{-| The outcome of an assertion or step.
 -}
-type alias Group =
-  { nodes : List Node
-  , name : String
-  }
-
-
-{-| Representatio of a mocked request.
--}
-type alias Request =
-  { method : String
-  , url : String
-  , response :
-    { status : Int
-    , body : String
-    }
-  }
+type alias Outcome
+  = Spec.Types.Outcome
 
 
 {-| Representation of a test tree (Node).
 -}
-type Node
-  = Before (List Assertion)
-  | After (List Assertion)
-  | Http (List Request)
-  | GroupNode Group
-  | TestNode Test
+type alias Node =
+  Spec.Types.Node
 
 
-{-| Turns a tree into a flat list of tests.
--}
-flatten : List Test -> Node -> List Test
-flatten tests node =
-  case node of
-    -- There branches are processed in the group below
-    Before steps ->
-      tests
-
-    After steps ->
-      tests
-
-    Http mocks ->
-      tests
-
-    {- Process a group node:
-       * add before and after hooks to test
-       * add requests to tests
-    -}
-    GroupNode node ->
-      let
-        getRequests nd =
-          case nd of
-            Http requests -> requests
-            _ -> []
-
-        getBefores nd =
-          case nd of
-            Before steps -> steps
-            _ -> []
-
-        getAfters nd =
-          case nd of
-            After steps -> steps
-            _ -> []
-
-        filterNodes nd =
-          case nd of
-            After _ -> False
-            Before _ -> False
-            _ -> True
-
-        beforeSteps =
-          List.map getBefores node.nodes
-            |> List.foldr (++) []
-
-        afterSteps =
-          List.map getAfters node.nodes
-            |> List.foldr (++) []
-
-        filteredNodes =
-          List.filter filterNodes node.nodes
-
-        requests =
-          List.map getRequests node.nodes
-            |> List.foldr (++) []
-      in
-        List.map (flatten []) filteredNodes
-          |> List.foldr (++) tests
-          |> List.map (\test ->
-            { test
-            | steps = beforeSteps ++ test.steps ++ afterSteps
-            , requests = test.requests ++ requests
-            , path = [node.name] ++ test.path
-            })
-
-    TestNode node ->
-      tests ++ [ node ]
+flip =
+  Spec.Assertions.flip
 
 {-| Groups the given tests and groups into a new group.
 
@@ -264,3 +188,109 @@ stepGroup message steps =
     List.map mapTask steps
       |> Task.sequence
       |> Task.andThen handleResults
+
+
+{-| A record for quickly accessing assertions and giving it a readable format.
+
+    it "should do something"
+      [ assert.not.containsText { text = "something", selector = "div" }
+      , assert.styleEquals
+        { style = "display", value = "block", selector = "div" }
+      ]
+-}
+assert :
+  { attributeContains : AttributeData -> Assertion
+  , attributeEquals : AttributeData -> Assertion
+  , valueContains : TextData -> Assertion
+  , classPresent : ClassData -> Assertion
+  , containsText : TextData -> Assertion
+  , styleEquals : StyleData -> Assertion
+  , elementPresent : String -> Assertion
+  , elementVisible : String -> Assertion
+  , titleContains : String -> Assertion
+  , valueEquals : TextData -> Assertion
+  , titleEquals : String -> Assertion
+  , urlContains : String -> Assertion
+  , urlEquals : String -> Assertion
+  , not :
+    { attributeContains : AttributeData -> Assertion
+    , attributeEquals : AttributeData -> Assertion
+    , valueContains : TextData -> Assertion
+    , classPresent : ClassData -> Assertion
+    , containsText : TextData -> Assertion
+    , styleEquals : StyleData -> Assertion
+    , elementPresent : String -> Assertion
+    , elementVisible : String -> Assertion
+    , titleContains : String -> Assertion
+    , valueEquals : TextData -> Assertion
+    , titleEquals : String -> Assertion
+    , urlContains : String -> Assertion
+    , urlEquals : String -> Assertion
+    }
+  }
+assert =
+  { attributeContains = Spec.Native.attributeContains
+  , attributeEquals = Spec.Native.attributeEquals
+  , elementPresent = Spec.Native.elementPresent
+  , elementVisible = Spec.Native.elementVisible
+  , valueContains = Spec.Native.valueContains
+  , titleContains = Spec.Native.titleContains
+  , containsText = Spec.Native.containsText
+  , classPresent = Spec.Native.classPresent
+  , styleEquals = Spec.Native.styleEquals
+  , titleEquals = Spec.Native.titleEquals
+  , valueEquals = Spec.Native.valueEquals
+  , urlContains = Spec.Native.urlContains
+  , urlEquals = Spec.Native.urlEquals
+  , not =
+    { attributeContains = Spec.Native.attributeContains >> flip
+    , attributeEquals = Spec.Native.attributeEquals >> flip
+    , elementPresent = Spec.Native.elementPresent >> flip
+    , elementVisible = Spec.Native.elementVisible >> flip
+    , valueContains = Spec.Native.valueContains >> flip
+    , titleContains = Spec.Native.titleContains >> flip
+    , containsText = Spec.Native.containsText >> flip
+    , classPresent = Spec.Native.classPresent >> flip
+    , styleEquals = Spec.Native.styleEquals >> flip
+    , titleEquals = Spec.Native.titleEquals >> flip
+    , valueEquals = Spec.Native.valueEquals >> flip
+    , urlContains = Spec.Native.urlContains >> flip
+    , urlEquals = Spec.Native.urlEquals >> flip
+    }
+  }
+
+
+{-| Common steps for testing web applications (click, fill, etc..)
+-}
+steps :
+  { dispatchEvent : String -> Json.Value -> String -> Step
+  , getAttribute : String -> String -> Task Never String
+  , setValue : String -> String -> Step
+  , getTitle : Task Never String
+  , clearValue : String -> Step
+  , getUrl : Task Never String
+  , click : String -> Step
+  }
+steps =
+  { dispatchEvent = Native.Spec.dispatchEvent
+  , getAttribute =Native.Spec.getAttribute
+  , clearValue = Native.Spec.clearValue
+  , getTitle = Native.Spec.getTitle
+  , setValue = Native.Spec.setValue
+  , getUrl = Native.Spec.getUrl
+  , click = Native.Spec.click
+  }
+
+
+{-| Runs the given tests without an app / component.
+-}
+run : Node -> Program Never (State String msg) (Msg msg)
+run =
+  Spec.Runner.run
+
+
+{-| Runs the given tests with the given app / component.
+-}
+runWithProgram : Prog model msg -> Node -> Program Never (State model msg) (Msg msg)
+runWithProgram =
+  Spec.Runner.runWithProgram

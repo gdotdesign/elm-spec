@@ -1,7 +1,4 @@
-import Spec exposing (http, describe, it)
-import Spec.Assertions exposing (assert)
-import Spec.Steps exposing (click)
-import Spec.Runner
+import Spec exposing (..)
 
 import Html.Attributes exposing (class)
 import Html exposing (div, text, span, button)
@@ -67,15 +64,15 @@ tests =
       ]
     , it "should mock http requests"
       [ assert.containsText { selector = "span", text = "" }
-      , click "button.get-test"
+      , steps.click "button.get-test"
       , assert.containsText { selector = "span", text = "OK /test" }
-      , click "button.post-blah"
+      , steps.click "button.post-blah"
       , assert.containsText { selector = "span", text = "ERROR" }
       ]
     ]
 
 main =
-  Spec.Runner.runWithProgram
+  runWithProgram
     { subscriptions = \_ -> Sub.none
     , update = update
     , view = view

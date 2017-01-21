@@ -1,21 +1,18 @@
 module Spec.Assertions exposing (..)
 
-{-| Assertions and utility functions for them.
-
-# Assert
-@docs assert
+{-| Utility functions for assertions.
 
 # Outcome
 @docs Outcome, fail, pass, error, flip
 -}
-import Task exposing (Task)
 
 import Spec.Types exposing (..)
-import Spec.Native
+import Task exposing (Task)
 
 {-| The outcome of an assertion or step.
 -}
-type alias Outcome = Spec.Types.Outcome
+type alias Outcome
+  = Spec.Types.Outcome
 
 {-| Creates a failed outcome with the given message.
 -}
@@ -50,72 +47,3 @@ flip =
       _ -> result
   )
 
-
-{-| A record for quickly accessing assertions and giving it a readable format.
-
-    it "should do something"
-      [ assert.not.containsText { text = "something", selector = "div" }
-      , assert.styleEquals
-        { style = "display", value = "block", selector = "div" }
-      ]
--}
-assert :
-  { attributeContains : AttributeData -> Assertion
-  , attributeEquals : AttributeData -> Assertion
-  , valueContains : TextData -> Assertion
-  , classPresent : ClassData -> Assertion
-  , containsText : TextData -> Assertion
-  , styleEquals : StyleData -> Assertion
-  , elementPresent : String -> Assertion
-  , elementVisible : String -> Assertion
-  , titleContains : String -> Assertion
-  , valueEquals : TextData -> Assertion
-  , titleEquals : String -> Assertion
-  , urlContains : String -> Assertion
-  , urlEquals : String -> Assertion
-  , not :
-    { attributeContains : AttributeData -> Assertion
-    , attributeEquals : AttributeData -> Assertion
-    , valueContains : TextData -> Assertion
-    , classPresent : ClassData -> Assertion
-    , containsText : TextData -> Assertion
-    , styleEquals : StyleData -> Assertion
-    , elementPresent : String -> Assertion
-    , elementVisible : String -> Assertion
-    , titleContains : String -> Assertion
-    , valueEquals : TextData -> Assertion
-    , titleEquals : String -> Assertion
-    , urlContains : String -> Assertion
-    , urlEquals : String -> Assertion
-    }
-  }
-assert =
-  { attributeContains = Spec.Native.attributeContains
-  , attributeEquals = Spec.Native.attributeEquals
-  , elementPresent = Spec.Native.elementPresent
-  , elementVisible = Spec.Native.elementVisible
-  , valueContains = Spec.Native.valueContains
-  , titleContains = Spec.Native.titleContains
-  , containsText = Spec.Native.containsText
-  , classPresent = Spec.Native.classPresent
-  , styleEquals = Spec.Native.styleEquals
-  , titleEquals = Spec.Native.titleEquals
-  , valueEquals = Spec.Native.valueEquals
-  , urlContains = Spec.Native.urlContains
-  , urlEquals = Spec.Native.urlEquals
-  , not =
-    { attributeContains = Spec.Native.attributeContains >> flip
-    , attributeEquals = Spec.Native.attributeEquals >> flip
-    , elementPresent = Spec.Native.elementPresent >> flip
-    , elementVisible = Spec.Native.elementVisible >> flip
-    , valueContains = Spec.Native.valueContains >> flip
-    , titleContains = Spec.Native.titleContains >> flip
-    , containsText = Spec.Native.containsText >> flip
-    , classPresent = Spec.Native.classPresent >> flip
-    , styleEquals = Spec.Native.styleEquals >> flip
-    , titleEquals = Spec.Native.titleEquals >> flip
-    , valueEquals = Spec.Native.valueEquals >> flip
-    , urlContains = Spec.Native.urlContains >> flip
-    , urlEquals = Spec.Native.urlEquals >> flip
-    }
-  }

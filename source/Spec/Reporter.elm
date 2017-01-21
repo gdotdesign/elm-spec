@@ -6,7 +6,6 @@ module Spec.Reporter exposing (render)
 -}
 import Spec.Styles as Styles exposing (stylesheet)
 import Spec.Types exposing (..)
-import Spec exposing (Test)
 
 import Json.Encode
 

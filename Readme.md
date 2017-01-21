@@ -45,10 +45,7 @@ And then install with [elm-github-install](https://github.com/gdotdesign/elm-git
 Here is an exmaple of testing a simple component:
 
 ```elm
-import Spec exposing (describe, it, Node)
-import Spec.Assertions exposing (assert)
-import Spec.Steps exposing (click)
-import Spec.Runner
+import Spec exposing (..)
 
 import Html.Events exposing (onClick)
 import Html exposing (div, text)
@@ -78,13 +75,13 @@ specs =
   describe "Example"
     [ it "clicking on the div should change the text"
       [ assert.containsText { text = "Empty", selector = "div" }
-      , click "div"
+      , steps.click "div"
       , assert.containsText { text = "Something", selector = "div" }
       ]
     ]
 
 main =
-  Spec.Runner.runWithProgram
+  runWithProgram
     { subscriptions = \_ -> Sub.none
     , update = update
     , view = view
@@ -96,13 +93,14 @@ And open the file in `elm-reactor` or run it wit the `elm-spec` command:
 
 ```
 $ elm-spec spec/ExampleSpec.elm
-spec/ExampleSpec.elm
- Example / clicking on the div should change the text
-   Element div contains text "Empty"
-   Clicked: div
-   Element div contains text "Something"
+◎ spec/ExampleSpec.elm
+  Example
+    ✔ clicking on the div should change the text
+      Element div contains text "Empty"
+      Clicked: div
+      Element div contains text "Something"
 
 1 files 1 tests:
-  3 steps 3 successfull 0 failed 0 errored
-  0 requests 0 called 0 not called 0 unhandled
+ 3 steps: 3 successfull, 0 failed, 0 errored
+ 0 requests: 0 called, 0 not called, 0 unhandled
 ```

@@ -1,8 +1,5 @@
-import Spec.Assertions exposing (..)
-import Spec.Expect as Expect
-import Spec.Runner exposing (..)
-import Spec.Steps exposing (..)
 import Spec exposing (..)
+import Spec.Expect as Expect
 
 import Html.Events exposing (onClick, on, keyCode)
 import Html.Attributes exposing (attribute)
@@ -51,13 +48,13 @@ specs =
     , describe ".click"
       [ it "wait for the event to finish"
         [ assert.containsText { text = "Empty", selector = "div" }
-        , click "div"
+        , steps.click "div"
         , assert.containsText { text = "Something", selector = "div" }
         ]
       ]
     , describe ".getAttribute"
       [ it "should return attribute"
-        [ getAttribute "test" "div"
+        [ steps.getAttribute "test" "div"
           |> Expect.equals "test"
             "Testing if attribute equals with getAttribute"
         ]
@@ -65,27 +62,27 @@ specs =
     , describe ".setValue"
       [ it "should set value of element"
         [ assert.valueEquals { text = "", selector = "input" }
-        , setValue { value = "test", selector = "input" }
+        , steps.setValue "test" "input"
         , assert.valueEquals { text = "test", selector = "input" }
         ]
       ]
     , describe ".clearValue"
       [ it "should clear value of element"
-        [ setValue { value = "test", selector = "input" }
+        [ steps.setValue "test" "input"
         , assert.valueEquals { text = "test", selector = "input" }
-        , clearValue "input"
+        , steps.clearValue "input"
         , assert.valueEquals { text = "", selector = "input" }
         ]
       ]
     , describe ".dispatchEvent"
       [ it "should dispatch the given event"
         [ assert.containsText { text = "Empty", selector = "div" }
-        , dispatchEvent "click" (JE.object []) "div"
+        , steps.dispatchEvent "click" (JE.object []) "div"
         , assert.containsText { text = "Something", selector = "div" }
         ]
       , it "should dispatch event with data"
         [ assert.containsText { text = "Empty", selector = "div" }
-        , dispatchEvent "keydown" (JE.object [("keyCode", JE.int 13)]) "input"
+        , steps.dispatchEvent "keydown" (JE.object [("keyCode", JE.int 13)]) "input"
         , assert.containsText { text = "13", selector = "div" }
         ]
       ]

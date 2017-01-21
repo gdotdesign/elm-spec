@@ -1,6 +1,3 @@
-import Spec.Assertions exposing (..)
-import Spec.Runner exposing (..)
-import Spec.Steps exposing (..)
 import Spec exposing (..)
 
 import Html.Attributes exposing (attribute, class, style, value)
@@ -118,13 +115,13 @@ specs =
       [ it "should check if title contains text"
         [ Task.andThen
             (\title -> assert.titleContains (String.slice 0 4 title))
-            getTitle
+            steps.getTitle
         , assert.not.titleContains "Blah"
         ]
       ]
     , describe ".titleEquals"
       [ it "should check if title equals text"
-        [ Task.andThen assert.titleEquals getTitle
+        [ Task.andThen assert.titleEquals steps.getTitle
         , assert.not.titleEquals "Blah"
         ]
       ]
@@ -132,13 +129,13 @@ specs =
       [ it "should check if the current urls contains text"
         [ Task.andThen
             (\url -> assert.urlContains (String.slice 0 4 url))
-            getUrl
+            steps.getUrl
         , assert.not.urlContains "Blah"
         ]
       ]
     , describe ".urlEquals"
       [ it "should check if title equals text"
-        [ Task.andThen assert.urlEquals getUrl
+        [ Task.andThen assert.urlEquals steps.getUrl
         , assert.not.urlEquals "Blah"
         ]
       ]

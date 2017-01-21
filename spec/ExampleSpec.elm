@@ -1,7 +1,4 @@
-import Spec exposing (describe, it, Node)
-import Spec.Assertions exposing (assert)
-import Spec.Steps exposing (click)
-import Spec.Runner
+import Spec exposing (..)
 
 import Html.Events exposing (onClick)
 import Html exposing (div, text)
@@ -31,13 +28,13 @@ specs =
   describe "Example"
     [ it "clicking on the div should change the text"
       [ assert.containsText { text = "Empty", selector = "div" }
-      , click "div"
+      , steps.click "div"
       , assert.containsText { text = "Something", selector = "div" }
       ]
     ]
 
 main =
-  Spec.Runner.runWithProgram
+  runWithProgram
     { subscriptions = \_ -> Sub.none
     , update = update
     , view = view

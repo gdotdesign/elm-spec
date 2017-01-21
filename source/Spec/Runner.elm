@@ -1,13 +1,11 @@
-module Spec.Runner exposing (run, runWithProgram)
+module Spec.Runner exposing (..)
 
 {-| This module runs the tests with or without an app.
 
 @docs run, runWithProgram
 -}
-import Spec.Types exposing (Outcome(..), Assertion)
-import Spec exposing (Test, Node)
+import Spec.Types exposing (Outcome(..), Assertion, Test, Node)
 import Spec.Reporter
-import Spec.Steps
 
 import Json.Encode as Json
 import Task
@@ -159,7 +157,7 @@ runWithProgram data tests =
   let
     processedTests =
       tests
-      |> Spec.flatten []
+      |> Spec.Types.flatten []
       |> List.indexedMap (\index item -> { item | id = index })
 
     testToRun =

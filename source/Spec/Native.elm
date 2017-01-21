@@ -9,6 +9,7 @@ module Spec.Native exposing (..)
 -}
 import Spec.Types exposing (..)
 import Task exposing (Task)
+import Native.HttpMock
 import Native.Spec
 
 

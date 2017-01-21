@@ -1,6 +1,4 @@
-import Spec exposing (describe, it, Node)
-import Spec.Assertions exposing (assert)
-import Spec.Runner
+import Spec exposing (..)
 
 import Html exposing (node, div, text)
 
@@ -100,7 +98,7 @@ specs =
     describe "Flex Properties" (List.map map keys)
 
 main =
-  Spec.Runner.runWithProgram
+  runWithProgram
     { subscriptions = \_ -> Sub.none
     , update = update
     , view = view
