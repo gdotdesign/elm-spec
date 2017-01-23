@@ -49,7 +49,7 @@ module.exports = function(file, testId) {
               console.log(`No Main found for: ${file}, exiting...`.red)
               process.exit(1)
             } else {
-               window.Elm.Main.embed(window.document.body)
+              window.Elm.Main.embed(window.document.body)
               window._elmSpecReport = function(results){
                 callback(null, { file: file, tests: results })
               }

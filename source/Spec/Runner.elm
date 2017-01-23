@@ -86,6 +86,9 @@ update msg model =
                   _ =
                     Native.Spec.mockHttpRequests test
 
+                  _ =
+                    Native.Spec.setLayout test.layout
+
                   -- Remove that step from the test
                   testWithoutStep =
                     { updatedTest | steps = remainingSteps }

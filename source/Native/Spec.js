@@ -1,4 +1,47 @@
 var _gdotdesign$elm_spec$Native_Spec = function() {
+   window.Element.prototype.oldGetBoundingClientRect =
+    window.Element.prototype.getBoundingClientRect
+
+   var oldElementFromPoint = document.elementFromPoint
+
+   document.elementFromPoint = function(x, y){
+    if (window._elmSpecLayout) {
+      var element = window._elmSpecLayout
+        .filter(function(item){
+          var rect = item[1]
+
+          return(rect.top <= y &&
+           rect.top + rect.height >= y &&
+           rect.left <= y &&
+           rect.left + rect.width >= x &&
+           document.querySelector(item[0])
+          )
+        })
+        .sort(function(aRect, bRect) {
+          return aRect[1].zIndex - bRect[1].zIndex
+        })
+        .map(function(item) { return document.querySelector(item[0]) })
+        .shift()
+
+      if (element) { return element }
+    }
+    throw "asd";
+   }
+
+   window.Element.prototype.getBoundingClientRect = function(){
+    if (window._elmSpecLayout) {
+      for (var value of window._elmSpecLayout) {
+        var selector = value[0]
+        var rect = value[1]
+        if (this.matches(selector)) {
+          return rect
+        }
+      }
+    }
+
+    return this.getBoundingClientRect()
+  }
+
   var task = _elm_lang$core$Native_Scheduler.nativeBinding
   var succeed = _elm_lang$core$Native_Scheduler.succeed
   var tuple0 = _elm_lang$core$Native_Utils.Tuple0
@@ -314,6 +357,11 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     }
   }
 
+  var setLayout = function(layout) {
+    window._elmSpecLayout =
+      toArray(layout).map(function(obj) { return [ obj._0, obj._1 ] })
+  }
+
   return {
     attributeContains: F3(attributeContains),
     attributeEquals: F3(attributeEquals),
@@ -333,10 +381,26 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     urlContains: urlContains,
     clearValue: clearValue,
     setValue: F2(setValue),
+    setLayout: setLayout,
     urlEquals: urlEquals,
     getTestId: getTestId,
     getTitle: getTitle,
     getUrl: getUrl,
+    getBoundingClientRect: function(selector){
+      try {
+        return document.querySelector(selector).getBoundingClientRect()
+      } catch (e) {
+        return { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 }
+      }
+    },
+    elementFromPoint: F2(function(x, y){
+      try {
+        return just(document.elementFromPoint(x, y))
+      } catch (e) {
+        console.log(e)
+        return nothing
+      }
+    }),
     ansiToHtml: function(value){
       return value.replace(/\x1b\[1m(.*?)\x1b\[21m/g, "<b>$1</b>")
     },

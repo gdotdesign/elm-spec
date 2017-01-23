@@ -7,7 +7,8 @@ import Task exposing (Task)
 {-| Representation of a test.
 -}
 type alias Test =
-  { requests : List Request
+  { layout : List (String, Rect)
+  , requests : List Request
   , results : List Outcome
   , steps : List Assertion
   , path : List String
@@ -27,11 +28,21 @@ type alias Request =
     }
   }
 
+type alias Rect =
+  { top : Int
+  , left : Int
+  , bottom : Int
+  , right : Int
+  , width : Int
+  , height : Int
+  , zIndex : Int
+  }
 
 {-| Representation of a test tree (Node).
 -}
 type Node
-  = Before (List Assertion)
+  = Layout (List (String, Rect))
+  | Before (List Assertion)
   | After (List Assertion)
   | Http (List Request)
   | GroupNode Group
@@ -123,6 +134,9 @@ flatten tests node =
     Http mocks ->
       tests
 
+    Layout layout ->
+      tests
+
     {- Process a group node:
        * add before and after hooks to test
        * add requests to tests
@@ -142,6 +156,11 @@ flatten tests node =
         getAfters nd =
           case nd of
             After steps -> steps
+            _ -> []
+
+        getLayouts nd =
+          case nd of
+            Layout layouts -> layouts
             _ -> []
 
         filterNodes nd =
@@ -164,6 +183,10 @@ flatten tests node =
         requests =
           List.map getRequests node.nodes
             |> List.foldr (++) []
+
+        layout =
+          List.map getLayouts node.nodes
+            |> List.foldr (++) []
       in
         List.map (flatten []) filteredNodes
           |> List.foldr (++) tests
@@ -172,6 +195,7 @@ flatten tests node =
             | steps = beforeSteps ++ test.steps ++ afterSteps
             , requests = test.requests ++ requests
             , path = [node.name] ++ test.path
+            , layout = test.layout ++ layout
             })
 
     TestNode node ->

@@ -10,6 +10,7 @@ module Spec exposing
   , before
   , after
   , http
+  , layout
   , stepGroup
   , assert
   , steps
@@ -42,6 +43,9 @@ module Spec exposing
 
 # Http
 @docs http
+
+# Layout
+@docs layout
 
 # Running
 @docs run, runWithProgram
@@ -113,6 +117,7 @@ test name steps =
     { steps = steps
     , requests = []
     , results = []
+    , layout = []
     , name = name
     , path = []
     , id = -1
@@ -131,6 +136,10 @@ before : List Assertion -> Node
 before =
   Before
 
+{-|-}
+layout : List (String, Rect) -> Node
+layout =
+  Layout
 
 {-|-}
 after : List Assertion -> Node
