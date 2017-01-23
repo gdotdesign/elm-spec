@@ -210,6 +210,7 @@ stepGroup message steps =
 assert :
   { attributeContains : AttributeData -> Assertion
   , attributeEquals : AttributeData -> Assertion
+  , inlineStyleEquals : StyleData -> Assertion
   , valueContains : TextData -> Assertion
   , classPresent : ClassData -> Assertion
   , containsText : TextData -> Assertion
@@ -224,6 +225,7 @@ assert :
   , not :
     { attributeContains : AttributeData -> Assertion
     , attributeEquals : AttributeData -> Assertion
+    , inlineStyleEquals : StyleData -> Assertion
     , valueContains : TextData -> Assertion
     , classPresent : ClassData -> Assertion
     , containsText : TextData -> Assertion
@@ -239,6 +241,7 @@ assert :
   }
 assert =
   { attributeContains = Spec.Native.attributeContains
+  , inlineStyleEquals = Spec.Native.inlineStyleEquals
   , attributeEquals = Spec.Native.attributeEquals
   , elementPresent = Spec.Native.elementPresent
   , elementVisible = Spec.Native.elementVisible
@@ -253,6 +256,7 @@ assert =
   , urlEquals = Spec.Native.urlEquals
   , not =
     { attributeContains = Spec.Native.attributeContains >> flip
+    , inlineStyleEquals = Spec.Native.inlineStyleEquals >> flip
     , attributeEquals = Spec.Native.attributeEquals >> flip
     , elementPresent = Spec.Native.elementPresent >> flip
     , elementVisible = Spec.Native.elementVisible >> flip

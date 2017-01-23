@@ -136,10 +136,22 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
 
   var styleEquals = function(style, value, selector) {
     return taskWithElement(selector, function(element){
-      if(window.getComputedStyle(element)[style].toString() === value){
+      var val = window.getComputedStyle(element)[style].toString()
+      if( val === value){
         return pass("Element " + bold(selector) + " has style " + bold(style) + " with value " + boldString(value))
       }else{
-        return fail("Element " + bold(selector) + " does not have style " + bold(style) + " with value " + boldString(value))
+        return fail("Element " + bold(selector) + " does not have style " + bold(style) + ": " + bold(val) + " with value " + boldString(value))
+      }
+    })
+  }
+
+  var inlineStyleEquals = function(style, value, selector) {
+    return taskWithElement(selector, function(element){
+      var val = element.style[style].toString()
+      if( val === value){
+        return pass("Element " + bold(selector) + " has style " + bold(style) + " with value " + boldString(value))
+      }else{
+        return fail("Element " + bold(selector) + " does not have style " + bold(style) + ": " + bold(val) + " with value " + boldString(value))
       }
     })
   }
@@ -382,6 +394,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
 
   return {
     attributeContains: F3(attributeContains),
+    inlineStyleEquals: F3(inlineStyleEquals),
     attributeEquals: F3(attributeEquals),
     mockHttpRequests: mockHttpRequests,
     getMockResults: getMockResults,

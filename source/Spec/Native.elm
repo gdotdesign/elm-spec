@@ -41,7 +41,7 @@ classPresent { class, selector } =
   Native.Spec.classPresent class selector
 
 
-{-| Checks if the given element given attribute equals the expected value.
+{-| Checks if the given element given computed style equals the expected value.
 -}
 styleEquals : StyleData -> Assertion
 styleEquals { style, value, selector } =
@@ -102,3 +102,10 @@ valueContains { text, selector } =
 valueEquals : TextData -> Assertion
 valueEquals { text, selector } =
   Native.Spec.valueEquals text selector
+
+
+{-| Checks if the given element given inline style equals the expected value.
+-}
+inlineStyleEquals : StyleData -> Assertion
+inlineStyleEquals { style, value, selector } =
+  Native.Spec.inlineStyleEquals style value selector

@@ -30,6 +30,8 @@ view model =
     [ div
       [ attribute "test" "test"
       , class "test"
+      , style
+        [("cursor", "pointer")]
       ]
       [ text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " ]
     , div [ class "hidden-by-none", style [ ( "display", "none" ) ] ] []
@@ -70,6 +72,14 @@ specs =
           { style = "display", value = "block", selector = "div" }
         , assert.not.styleEquals
           { style = "display", value = "inline-block", selector = "div" }
+        ]
+      ]
+    , describe ".inlineStyleEquals"
+      [ it "should check it element has the given style with the given value "
+        [ assert.inlineStyleEquals
+          { style = "cursor", value = "pointer", selector = "div" }
+        , assert.not.inlineStyleEquals
+          { style = "cursor", value = "not-allowed", selector = "div" }
         ]
       ]
     , describe ".attributeEquals"
