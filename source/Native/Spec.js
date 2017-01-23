@@ -41,7 +41,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
       }
     }
 
-    return this.getBoundingClientRect()
+    return this.oldGetBoundingClientRect()
   }
 
   var task = _elm_lang$core$Native_Scheduler.nativeBinding
