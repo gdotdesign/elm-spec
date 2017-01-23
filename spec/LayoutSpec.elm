@@ -47,6 +47,7 @@ view model =
     , span
       [ onClick (GetElement 10 10) ]
       [ text (toString model.element) ]
+    , node "test2" [] []
     ]
 
 specs : Node
@@ -78,13 +79,23 @@ specs =
         ]
       ]
     , context "elementFromPoint"
-      [  layout
+      [ layout
         [ ( "test", { top = 0, left = 0, right = 0, bottom = 0, width = 20, height = 20, zIndex = 1 })
         ]
       , it "get element"
         [ assert.containsText { text = "Nothing", selector = "span" }
         , steps.click "span"
         , assert.containsText { text = "Just \"TEST\"", selector = "span" }
+        ]
+      , context "Multiple elements"
+        [ layout
+          [ ( "test2", { top = 0, left = 0, right = 0, bottom = 0, width = 20, height = 20, zIndex = 2 })
+          ]
+        , it "gets top most element"
+          [ assert.containsText { text = "Nothing", selector = "span" }
+          , steps.click "span"
+          , assert.containsText { text = "Just \"TEST2\"", selector = "span" }
+          ]
         ]
       ]
     ]

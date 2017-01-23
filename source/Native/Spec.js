@@ -7,6 +7,10 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
    document.elementFromPoint = function(x, y){
     if (window._elmSpecLayout) {
       var element = window._elmSpecLayout
+        .map(function(item) {
+          item.push(document.querySelector(item[0]))
+          return item
+        })
         .filter(function(item){
           var rect = item[1]
 
@@ -14,13 +18,13 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
            rect.top + rect.height >= y &&
            rect.left <= y &&
            rect.left + rect.width >= x &&
-           document.querySelector(item[0])
+           item[2]
           )
         })
         .sort(function(aRect, bRect) {
-          return aRect[1].zIndex - bRect[1].zIndex
+          return bRect[1].zIndex - aRect[1].zIndex
         })
-        .map(function(item) { return document.querySelector(item[0]) })
+        .map(function(item) { return item[2] })
         .shift()
 
       if (element) { return element }
@@ -397,7 +401,6 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
       try {
         return just(document.elementFromPoint(x, y).tagName)
       } catch (e) {
-        console.log(e)
         return nothing
       }
     }),
