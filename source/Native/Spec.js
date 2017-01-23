@@ -282,18 +282,34 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
   }
 
   var dispatchEvent = function(eventType, data, selector){
-    return taskWithElement(selector, function(element){
-      var event = new Event(eventType)
+    var event = new Event(eventType)
 
-      for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-          event[key] = data[key]
-        }
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+        event[key] = data[key]
       }
+    }
 
-      element.dispatchEvent(event)
-      return pass("Dispatched event " + bold(eventType) + " on element " + bold(selector))
-    })
+    if (selector === 'document' || selector === 'window') {
+      return task(function(callback){
+        if (selector === 'document') {
+          document.dispatchEvent(event)
+          callback(succeed(pass(
+            "Dispatched event " + bold(eventType) + " on " + bold("document")
+          )))
+        } else {
+          window.dispatchEvent(event)
+          callback(succeed(pass(
+            "Dispatched event " + bold(eventType) + " on " + bold("window")
+          )))
+        }
+      })
+    } else {
+      return taskWithElement(selector, function(element){
+        element.dispatchEvent(event)
+        return pass("Dispatched event " + bold(eventType) + " on element " + bold(selector))
+      })
+    }
   }
 
   var getTitle = task(function(callback){
