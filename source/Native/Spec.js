@@ -2,8 +2,6 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
    window.Element.prototype.oldGetBoundingClientRect =
     window.Element.prototype.getBoundingClientRect
 
-   var oldElementFromPoint = document.elementFromPoint
-
    document.elementFromPoint = function(x, y){
     if (window._elmSpecLayout) {
       var element = window._elmSpecLayout
