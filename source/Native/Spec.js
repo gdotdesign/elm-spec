@@ -395,7 +395,7 @@ var _gdotdesign$elm_spec$Native_Spec = function() {
     },
     elementFromPoint: F2(function(x, y){
       try {
-        return just(document.elementFromPoint(x, y))
+        return just(document.elementFromPoint(x, y).tagName)
       } catch (e) {
         console.log(e)
         return nothing

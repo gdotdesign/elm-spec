@@ -12,7 +12,7 @@ import Json.Decode as JD
 
 type alias Model =
   { rect : String
-  , element : String
+  , element : Maybe String
   }
 
 type Msg
@@ -22,14 +22,15 @@ type Msg
 init : () -> Model
 init _ =
   { rect = "{}"
-  , element = "Nothing"
+  , element = Nothing
   }
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     GetElement x y ->
-      ( model, Cmd.none
+      ( { model | element = Native.Spec.elementFromPoint x y }
+      , Cmd.none
       )
 
     GetRect value ->
@@ -45,7 +46,7 @@ view model =
       [ text model.rect ]
     , span
       [ onClick (GetElement 10 10) ]
-      [ text model.element ]
+      [ text (toString model.element) ]
     ]
 
 specs : Node
@@ -83,6 +84,7 @@ specs =
       , it "get element"
         [ assert.containsText { text = "Nothing", selector = "span" }
         , steps.click "span"
+        , assert.containsText { text = "Just \"TEST\"", selector = "span" }
         ]
       ]
     ]
