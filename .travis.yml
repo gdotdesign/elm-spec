@@ -23,3 +23,4 @@ before_install:
 script:
   - yarn elm-install
   - sysconfcpus/bin/sysconfcpus -n 2 yarn spec
+  - yarn standard

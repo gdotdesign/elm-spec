@@ -1,4 +1,4 @@
-const CSSStyleDeclaration = require("cssstyle").CSSStyleDeclaration
+const CSSStyleDeclaration = require('cssstyle').CSSStyleDeclaration
 
 const transition = require('./cssstyle/transition')
 const animation = require('./cssstyle/animation')

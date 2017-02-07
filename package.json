@@ -34,5 +34,13 @@
   "preferGlobal": true,
   "bin": {
     "elm-spec": "bin/elm-spec.js"
+  },
+  "devDependencies": {
+    "standard": "^8.6.0"
+  },
+  "standard": {
+    "ignore": [
+      "source/Native/HttpMock.js"
+    ]
   }
 }
