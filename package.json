@@ -20,6 +20,7 @@
     "async": "^2.1.4",
     "camelcase": "^4.0.0",
     "colors": "^1.1.2",
+    "cssstyle": "^0.2.37",
     "elm": "^0.18.0",
     "elm-github-install": "^0.3.0",
     "globby": "^6.1.0",
