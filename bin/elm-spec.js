@@ -1,11 +1,12 @@
 #! /usr/bin/env node
-"use strict"
+'use strict'
 
 const globby = require('globby')
 const async = require('async')
 
-const cssstyle = require('./lib/cssstyle')
 const runner = require('./lib/runner')
+
+require('./lib/cssstyle')
 
 const argv =
   require('yargs')
@@ -22,7 +23,7 @@ const argv =
 var glob
 var id
 
-if(argv._.length){
+if (argv._.length) {
   var file = argv._[0]
   var parts = file.split(':')
   glob = parts[0]
@@ -36,10 +37,10 @@ globby(glob).then(paths => {
 
   var files = paths.map(path => { return runner(path, id) })
 
-  async.series(files, function(errors, allresults){
+  async.series(files, (errors, allresults) => {
     var reporter = new Reporter(allresults)
     reporter.report()
 
     process.exit(reporter.exitCode)
   })
-});
+})

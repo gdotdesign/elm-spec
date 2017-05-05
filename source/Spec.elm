@@ -1,6 +1,7 @@
 module Spec exposing
   ( Outcome
   , Node
+  , Step
   , Test
   , group
   , context
@@ -21,7 +22,7 @@ module Spec exposing
 {-| This module provides a way to test Elm apps end-to-end in the browser.
 
 # Types
-@docs Test, Node
+@docs Test, Node, Step
 
 # Grouping
 @docs group, context, describe
@@ -57,6 +58,11 @@ import Spec.Native
 
 import Task exposing (Task)
 import Json.Decode as Json
+
+{-| Representation of a step.
+-}
+type alias Step =
+  Spec.Types.Step
 
 {-| Representation of a test.
 -}

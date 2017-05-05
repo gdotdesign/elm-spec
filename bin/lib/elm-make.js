@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 var which = require('npm-which')(__dirname)
 var spawn = require('child_process').spawn
@@ -6,7 +6,7 @@ var temp = require('temp').track()
 
 var elmExecutable = which.sync('elm-make')
 
-module.exports = function(file, callback) {
+module.exports = (file, callback) => {
   var filename = temp.openSync({ suffix: '.js' }).path
 
   var args =
@@ -25,7 +25,7 @@ module.exports = function(file, callback) {
     result += data
   })
 
-  command.on('close', function() {
+  command.on('close', () => {
     if (result.match('Successfully generated')) {
       callback(null, filename)
     } else {

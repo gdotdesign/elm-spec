@@ -1,6 +1,6 @@
 {
   "name": "elm-spec",
-  "version": "1.0.12",
+  "version": "1.1.0",
   "description": "Integration testing in Elm.",
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
     "async": "^2.1.4",
     "camelcase": "^4.0.0",
     "colors": "^1.1.2",
+    "cssstyle": "^0.2.37",
     "elm": "^0.18.0",
     "elm-github-install": "^1.0.1",
     "globby": "^6.1.0",
@@ -34,5 +35,13 @@
   "preferGlobal": true,
   "bin": {
     "elm-spec": "bin/elm-spec.js"
+  },
+  "devDependencies": {
+    "standard": "^8.6.0"
+  },
+  "standard": {
+    "ignore": [
+      "source/Native/HttpMock.js"
+    ]
   }
 }
