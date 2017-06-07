@@ -39,4 +39,5 @@ main =
     , update = update
     , view = view
     , init = init
+    , initCmd = Cmd.none
     } specs

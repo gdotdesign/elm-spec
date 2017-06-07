@@ -91,6 +91,7 @@ specs =
 main =
   runWithProgram
     { init = init
+    , initCmd = Cmd.none
     , update = update
     , view = view
     , subscriptions = \_ -> Sub.none

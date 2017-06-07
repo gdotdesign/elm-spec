@@ -42,6 +42,7 @@ type alias Prog model msg =
   , subscriptions : model -> Sub msg
   , view : model -> Html.Html msg
   , init : () -> model
+  , initCmd : Cmd msg
   }
 
 
@@ -149,6 +150,7 @@ run tests =
     , subscriptions = (\_ -> Sub.none)
     , view = (\_ -> Html.text "")
     , init = (\_ -> "")
+    , initCmd = Cmd.none
     }
     tests
 
@@ -181,7 +183,7 @@ runWithProgram data tests =
           , view = data.view
           , counter = 0
           }
-        , perform (Next Nothing)
+        , Cmd.batch [ perform (Next Nothing), Cmd.map App data.initCmd ]
         )
       }
 
