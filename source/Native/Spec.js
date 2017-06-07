@@ -4,7 +4,7 @@
 /* eslint no-undef: "off" */
 /* eslint no-control-regex: "off" */
 
-var _gdotdesign$elm_spec$Native_Spec = (function () {
+var _takaczapka$elm_spec$Native_Spec = (function () {
   window.Element.prototype.oldGetBoundingClientRect =
     window.Element.prototype.getBoundingClientRect
 

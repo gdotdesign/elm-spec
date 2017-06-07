@@ -1,7 +1,7 @@
 {
   "version": "1.1.1",
   "summary": "Integration testing in Elm.",
-  "repository": "https://github.com/gdotdesign/elm-spec.git",
+  "repository": "https://github.com/takaczapka/elm-spec.git",
   "license": "BSD3",
   "native-modules": true,
   "source-directories": [

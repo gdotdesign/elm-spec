@@ -4,13 +4,13 @@
   "description": "Integration testing in Elm.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gdotdesign/elm-spec.git"
+    "url": "git+https://github.com/takaczapka/elm-spec.git"
   },
-  "homepage": "https://github.com/gdotdesign/elm-spec#readme",
+  "homepage": "https://github.com/takaczapka/elm-spec#readme",
   "author": "",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/gdotdesign/elm-spec/issues"
+    "url": "https://github.com/takaczapka/elm-spec/issues"
   },
   "scripts": {
     "spec": "node bin/elm-spec.js",
