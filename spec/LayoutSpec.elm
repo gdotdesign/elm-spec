@@ -50,7 +50,7 @@ view model =
     , node "test2" [] []
     ]
 
-specs : Node
+specs : Node msg
 specs =
   describe "Layout mocking"
     [ context "getBoundingClientRect"

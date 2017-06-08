@@ -52,8 +52,10 @@ module Spec exposing
 @docs run, runWithProgram
 -}
 import Spec.Assertions exposing (pass, fail, error)
-import Spec.Runner exposing (Prog, State, Msg)
+import Spec.Runner exposing (Prog, State)
+import Spec.Messages exposing (Msg)
 import Spec.Types exposing (..)
+import Spec.CoreTypes exposing (..)
 import Spec.Native
 
 import Task exposing (Task)
@@ -66,20 +68,20 @@ type alias Step =
 
 {-| Representation of a test.
 -}
-type alias Test =
-  Spec.Types.Test
+type alias Test msg =
+  Spec.Types.Test msg
 
 
 {-| The outcome of an assertion or step.
 -}
 type alias Outcome
-  = Spec.Types.Outcome
+  = Spec.CoreTypes.Outcome
 
 
 {-| Representation of a test tree (Node).
 -}
-type alias Node =
-  Spec.Types.Node
+type alias Node msg =
+  Spec.Types.Node msg
 
 
 flip =
@@ -94,21 +96,21 @@ flip =
         ]
       ]
 -}
-group : String -> List Node -> Node
+group : String -> List (Node msg) -> Node msg
 group name nodes =
   GroupNode { name = name, nodes = nodes }
 
 
 {-| Alias for `group`.
 -}
-context : String -> List Node -> Node
+context : String -> List (Node msg) -> Node msg
 context =
   group
 
 
 {-| Alias for `group`.
 -}
-describe : String -> List Node -> Node
+describe : String -> List (Node msg) -> Node msg
 describe =
   group
 
@@ -117,7 +119,7 @@ describe =
 
     test "description"
 -}
-test : String -> List Assertion -> Node
+test : String -> List Assertion -> Node msg
 test name steps =
   TestNode
     { steps = steps
@@ -127,34 +129,35 @@ test name steps =
     , name = name
     , path = []
     , id = -1
+    , initCmd = Nothing
     }
 
 
 {-| Alias for `it`.
 -}
-it : String -> List Assertion -> Node
+it : String -> List Assertion -> Node msg
 it =
   test
 
 
 {-|-}
-before : List Assertion -> Node
+before : List Assertion -> Node msg
 before =
   Before
 
 {-|-}
-layout : List (String, Rect) -> Node
+layout : List (String, Rect) -> Node msg
 layout =
   Layout
 
 {-|-}
-after : List Assertion -> Node
+after : List Assertion -> Node msg
 after =
   After
 
 
 {-|-}
-http : List Request -> Node
+http : List Request -> Node msg
 http =
   Http
 
@@ -303,13 +306,13 @@ steps =
 
 {-| Runs the given tests without an app / component.
 -}
-run : Node -> Program Never (State String msg) (Msg msg)
+run : Node msg -> Program Never (State String msg) (Msg msg)
 run =
   Spec.Runner.run
 
 
 {-| Runs the given tests with the given app / component.
 -}
-runWithProgram : Prog model msg -> Node -> Program Never (State model msg) (Msg msg)
+runWithProgram : Prog model msg -> Node msg -> Program Never (State model msg) (Msg msg)
 runWithProgram =
   Spec.Runner.runWithProgram

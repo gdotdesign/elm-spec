@@ -27,13 +27,18 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     Request ->
-      ( model, Http.get "/test" JD.string |> Http.send Loaded )
+      ( model, load )
 
     Loaded (Err e) ->
       ( model, Cmd.none )
 
     Loaded (Ok result) ->
       ( result, Cmd.none )
+
+
+load : Cmd Msg
+load =
+    Http.get "/test" JD.string |> Http.send Loaded
 
 
 view : Model -> Html.Html Msg
@@ -43,7 +48,7 @@ view model =
    ]
 
 
-specs : Node
+specs : Node msg
 specs =
   describe "Spec.Steps"
     [ http
@@ -62,13 +67,8 @@ specs =
 main =
   runWithProgram
     { init = init
+    , initCmd = load
     , update = update
     , view = view
     , subscriptions = \_ -> Sub.none
-    , initCmd = fire Request
     } specs
-
-
-fire : msg -> Cmd msg
-fire msg =
-    Task.perform identity (Task.succeed msg)

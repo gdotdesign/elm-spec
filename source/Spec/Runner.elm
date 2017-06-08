@@ -4,7 +4,9 @@ module Spec.Runner exposing (..)
 
 @docs run, runWithProgram
 -}
-import Spec.Types exposing (Outcome(..), Assertion, Test, Node)
+import Spec.Types exposing (Assertion, Test, Node)
+import Spec.CoreTypes exposing (Outcome(..))
+import Spec.Messages exposing (Msg(..))
 import Spec.Reporter
 
 import Json.Encode as Json
@@ -19,21 +21,12 @@ import Html
 type alias State model msg =
   { update : msg -> model -> ( model, Cmd msg )
   , view : model -> Html.Html msg
-  , finishedTests : List Test
+  , finishedTests : List (Test msg)
   , appInit : () -> model
-  , tests : List Test
+  , tests : List (Test msg)
   , counter : Int
   , app : model
   }
-
-
-{-| Messages for a test program.
--}
-type Msg msg
-  = Next (Maybe Outcome)
-  | NoOp ()
-  | App msg
-
 
 {-| Representation of an app.
 -}
@@ -80,41 +73,55 @@ update msg model =
 
                 Nothing -> test
           in
-            case test.steps of
-              -- Take the nex step
-              step :: remainingSteps ->
-                let
-                  _ =
-                    Native.Spec.mockHttpRequests test
+            case test.initCmd of
+                Just cmd ->
+                    -- if there is app init Cmd to run, run it
+                    let
+                        _ =
+                            Native.Spec.mockHttpRequests test
 
-                  _ =
-                    Native.Spec.setLayout test.layout
+                        _ =
+                            Native.Spec.setLayout test.layout
 
-                  -- Remove that step from the test
-                  testWithoutStep =
-                    { updatedTest | steps = remainingSteps }
+                        testWithoutCmd = { test | initCmd = Nothing }
+                    in
+                        ({ model | tests = testWithoutCmd :: remainingTests }, Cmd.batch [ cmd, perform (Next Nothing) ] )
+                Nothing ->
+                    case test.steps of
+                      -- Take the next step
+                      step :: remainingSteps ->
+                        let
+                          _ =
+                            Native.Spec.mockHttpRequests test
 
-                  -- Create a task from that step
-                  stepTask =
-                    Native.Spec.raf
-                      |> Task.andThen (\_ -> step)
-                      |> Task.perform (Next << Just)
-                in
-                  -- Execute
-                  ( { model | tests = testWithoutStep :: remainingTests }
-                  , stepTask
-                  )
+                          _ =
+                            Native.Spec.setLayout test.layout
 
-              -- If there is no other steps go for the next test
-              [] ->
-                ( { model
-                  | finishedTests = model.finishedTests ++ [updatedTest]
-                  , counter = model.counter + 1
-                  , app = model.appInit ()
-                  , tests = remainingTests
-                  }
-                , perform (Next Nothing)
-                )
+                          -- Remove that step from the test
+                          testWithoutStep =
+                            { updatedTest | steps = remainingSteps }
+
+                          -- Create a task from that step
+                          stepTask =
+                            Native.Spec.raf
+                              |> Task.andThen (\_ -> step)
+                              |> Task.perform (Next << Just)
+                        in
+                          -- Execute
+                          ( { model | tests = testWithoutStep :: remainingTests }
+                          , stepTask
+                          )
+
+                      -- If there is no other steps go for the next test
+                      [] ->
+                        ( { model
+                          | finishedTests = model.finishedTests ++ [updatedTest]
+                          , counter = model.counter + 1
+                          , app = model.appInit ()
+                          , tests = remainingTests
+                          }
+                        , perform (Next Nothing)
+                        )
 
         -- When everything is finished report
         [] ->
@@ -126,13 +133,14 @@ update msg model =
 view : State model msg -> Html.Html (Msg msg)
 view model =
   let
+    app : (String, Html.Html (Msg msg))
     app =
       ( toString model.counter, Html.map App (model.view model.app) )
 
     nodes =
       if List.isEmpty model.tests then
         [ app
-        , ( "report", Spec.Reporter.render model.finishedTests )
+        , ( "report", Html.map App (Spec.Reporter.render model.finishedTests) )
         ]
       else
         [ app ]
@@ -143,7 +151,7 @@ view model =
 
 {-| Runs the given tests without an app / component.
 -}
-run : Node -> Program Never (State String msg) (Msg msg)
+run : Node msg -> Program Never (State String msg) (Msg msg)
 run tests =
   runWithProgram
     { update = (\_ _ -> ( "", Cmd.none ))
@@ -157,25 +165,27 @@ run tests =
 
 {-| Runs the given tests with the given app / component.
 -}
-runWithProgram : Prog model msg -> Node -> Program Never (State model msg) (Msg msg)
+runWithProgram : Prog model msg -> Node msg -> Program Never (State model msg) (Msg msg)
 runWithProgram data tests =
   let
-    processedTests =
+    processedTests : Cmd (Msg msg) -> List (Test msg)
+    processedTests initCmd =
       tests
       |> Spec.Types.flatten []
-      |> List.indexedMap (\index item -> { item | id = index })
+      |> List.indexedMap (\index item -> { item | id = index, initCmd = Just initCmd })
 
-    testToRun =
+    testToRun : Cmd (Msg msg) -> List (Test msg)
+    testToRun initCmd =
       case Native.Spec.getTestId () of
-        Just id -> List.filter (.id >> ((==) id)) processedTests
-        Nothing -> processedTests
+        Just id -> List.filter (.id >> ((==) id)) (processedTests initCmd)
+        Nothing -> processedTests initCmd
   in
     Html.program
       { subscriptions = (\model -> Sub.map App (data.subscriptions model.app))
       , update = update
       , view = view
       , init =
-        ( { tests = testToRun
+        ( { tests = testToRun (Cmd.map App data.initCmd)
           , update = data.update
           , appInit = data.init
           , finishedTests = []
@@ -183,14 +193,14 @@ runWithProgram data tests =
           , view = data.view
           , counter = 0
           }
-        , Cmd.batch [ perform (Next Nothing), Cmd.map App data.initCmd ]
+        , perform (Next Nothing)
         )
       }
 
 
 {-| Sends the report to the CLI when running tests in a terminal.
 -}
-report : List Test -> Cmd (Msg msg)
+report : List (Test msg) -> Cmd (Msg msg)
 report tests =
   let
     mockedRequests test =

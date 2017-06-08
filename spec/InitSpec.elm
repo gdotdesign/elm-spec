@@ -35,7 +35,7 @@ view model =
    ]
 
 
-specs : Node
+specs : Node msg
 specs =
   describe "Spec.Steps"
     [ describe ".setValue"

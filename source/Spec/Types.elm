@@ -3,13 +3,16 @@ module Spec.Types exposing (..)
 {-| This module contains the types for specs.
 -}
 import Task exposing (Task)
+import Spec.CoreTypes exposing (..)
+import Spec.Messages exposing (Msg)
 
 {-| Representation of a test.
 -}
-type alias Test =
+type alias Test msg =
   { layout : List (String, Rect)
   , requests : List Request
   , results : List Outcome
+  , initCmd : Maybe (Cmd (Msg msg))
   , steps : List Assertion
   , path : List String
   , name : String
@@ -40,19 +43,19 @@ type alias Rect =
 
 {-| Representation of a test tree (Node).
 -}
-type Node
+type Node msg
   = Layout (List (String, Rect))
   | Before (List Assertion)
   | After (List Assertion)
   | Http (List Request)
-  | GroupNode Group
-  | TestNode Test
+  | GroupNode (Group msg)
+  | TestNode (Test msg)
 
 
 {-| Representation of a test group.
 -}
-type alias Group =
-  { nodes : List Node
+type alias Group msg =
+  { nodes : List (Node msg)
   , name : String
   }
 
@@ -66,17 +69,6 @@ type alias Assertion
 {-| Step is just an alias for assertion.
 -}
 type alias Step = Assertion
-
-
-{-| Represents an outcome for a step:
-  * Error - if there was an error during the step (element not found for example)
-  * Fail - represents failure
-  * Pass - represents success
--}
-type Outcome
-  = Error String
-  | Fail String
-  | Pass String
 
 
 {-| Text data for assertions.
@@ -121,7 +113,7 @@ outcomeToString outcome =
 
 {-| Turns a tree into a flat list of tests.
 -}
-flatten : List Test -> Node -> List Test
+flatten : List (Test msg) -> Node msg -> List (Test msg)
 flatten tests node =
   case node of
     -- There branches are processed in the group below
