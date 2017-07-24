@@ -83,7 +83,7 @@ view : Model -> Html.Html Msg
 view model =
   div [] [ node "style" [] [ text style ] ]
 
-specs : Node
+specs : Node msg
 specs =
   let
     map key =
@@ -103,4 +103,5 @@ main =
     , update = update
     , view = view
     , init = init
+    , initCmd = Cmd.none
     } specs

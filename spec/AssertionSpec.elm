@@ -43,7 +43,7 @@ view model =
     ]
 
 
-specs : Node
+specs : Node msg
 specs =
   describe "Spec.Assertions"
     [ describe ".containsText"
@@ -166,6 +166,7 @@ specs =
 main =
   runWithProgram
     { init = init
+    , initCmd = Cmd.none
     , update = update
     , view = view
     , subscriptions = \_ -> Sub.none

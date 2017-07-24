@@ -40,7 +40,7 @@ view model =
     ]
 
 
-specs : Node
+specs : Node msg
 specs =
   describe "Spec.Steps"
     [ before [ assert.elementPresent "body" ]
@@ -91,6 +91,7 @@ specs =
 main =
   runWithProgram
     { init = init
+    , initCmd = Cmd.none
     , update = update
     , view = view
     , subscriptions = \_ -> Sub.none

@@ -23,7 +23,7 @@ view : Model -> Html.Html Msg
 view model =
   div [ onClick Set ] [ text model ]
 
-specs : Node
+specs : Node msg
 specs =
   describe "Example"
     [ it "clicking on the div should change the text"
@@ -39,4 +39,5 @@ main =
     , update = update
     , view = view
     , init = init
+    , initCmd = Cmd.none
     } specs

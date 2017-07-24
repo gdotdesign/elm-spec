@@ -50,7 +50,7 @@ view model =
     , node "test2" [] []
     ]
 
-specs : Node
+specs : Node msg
 specs =
   describe "Layout mocking"
     [ context "getBoundingClientRect"
@@ -103,6 +103,7 @@ specs =
 main =
   runWithProgram
     { init = init
+    , initCmd = Cmd.none
     , update = update
     , view = view
     , subscriptions = \_ -> Sub.none

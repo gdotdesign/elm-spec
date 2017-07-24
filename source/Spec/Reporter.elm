@@ -6,6 +6,8 @@ module Spec.Reporter exposing (render)
 -}
 import Spec.Styles as Styles exposing (stylesheet)
 import Spec.Types exposing (..)
+import Spec.CoreTypes exposing (Outcome)
+import Spec.CoreTypes exposing (Outcome(..))
 
 import Json.Encode
 
@@ -48,7 +50,7 @@ renderOutcome outcome =
 
 {-| Renders a test.
 -}
-renderTest : Test -> Html.Html msg
+renderTest : Test msg -> Html.Html msg
 renderTest model =
   let
     requests =
@@ -89,7 +91,7 @@ renderTest model =
 
 {-| Renders the test results.
 -}
-render : List Test -> Html.Html msg
+render : List (Test msg) -> Html.Html msg
 render tests =
   let
     styles =

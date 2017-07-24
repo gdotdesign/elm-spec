@@ -8,11 +8,12 @@ module Spec.Assertions exposing (..)
 
 import Spec.Types exposing (..)
 import Task exposing (Task)
+import Spec.CoreTypes exposing (Outcome(..))
 
 {-| The outcome of an assertion or step.
 -}
 type alias Outcome
-  = Spec.Types.Outcome
+  = Spec.CoreTypes.Outcome
 
 {-| Creates a failed outcome with the given message.
 -}
