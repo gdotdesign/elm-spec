@@ -4,13 +4,13 @@ module Spec.Reporter exposing (render)
 
 @docs render
 -}
-import Spec.Styles as Styles exposing (stylesheet)
-import Spec.Types exposing (..)
-
 import Json.Encode
 
 import Html.Attributes exposing (style, property)
 import Html exposing (div, strong, text)
+
+import Spec.Types exposing (..)
+import Spec.Styles as Styles
 
 
 {-| Renders an outcome.
@@ -39,7 +39,7 @@ renderOutcome outcome =
           style [ ( "color", "red" ) ]
   in
     div
-      [ stylesheet.class Styles.Test
+      [ style Styles.test
       , property "innerHTML" html
       , styles
       ]
@@ -65,10 +65,10 @@ renderTest model =
     results =
       List.map renderOutcome model.results
 
-    renderRequest class request =
+    renderRequest prefix styles request =
       div
-        [ stylesheet.class class ]
-        [ text (request.method ++ " - " ++ request.url) ]
+        [ style styles ]
+        [ text (prefix ++ " " ++ request.method ++ " - " ++ request.url) ]
 
     requestResults =
       if List.isEmpty requests.called
@@ -77,25 +77,18 @@ renderTest model =
       then
         []
       else
-        [ div [ stylesheet.class Styles.SubTitle ] [ text "Requets:" ]]
-        ++ (List.map (renderRequest Styles.CalledRequest) requests.called)
-        ++ (List.map (renderRequest Styles.NotCalledRequest) notCalled)
-        ++ (List.map (renderRequest Styles.UnhandledRequest) requests.unhandled)
+        [ div [ style Styles.subTitle ] [ text "Requests:" ]]
+        ++ (List.map (renderRequest "✔" Styles.calledRequest) requests.called)
+        ++ (List.map (renderRequest "✘" Styles.notCalledRequest) notCalled)
+        ++ (List.map (renderRequest "?" Styles.unhandledRequest) requests.unhandled)
 
   in
     div
-      [ stylesheet.class Styles.Row ] (title ++ results ++ requestResults)
+      [ style Styles.row ] (title ++ results ++ requestResults)
 
 
 {-| Renders the test results.
 -}
 render : List Test -> Html.Html msg
 render tests =
-  let
-    styles =
-      [ Styles.embed ]
-
-    rows =
-      List.map renderTest tests
-  in
-    Html.div [ stylesheet.class Styles.Container ] (styles ++ rows)
+  Html.div [ style Styles.container ] (List.map renderTest tests)

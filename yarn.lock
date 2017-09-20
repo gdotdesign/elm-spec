@@ -350,12 +350,14 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
-elm-github-install@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/elm-github-install/-/elm-github-install-1.1.0.tgz#a1b508f43f33f9d46bc164edfe94ec9ee1cb79ab"
+elm-github-install@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/elm-github-install/-/elm-github-install-1.6.0.tgz#827d0449014f5fa9c259fafdba74704a86a33ba8"
   dependencies:
     adm-zip "^0.4.7"
+    progress "^2.0.0"
     request "2.74.0"
+    request-progress "^3.0.0"
     shelljs "0.7.5"
     tar-fs "1.15.0"
     tmp "^0.0.31"
@@ -1209,6 +1211,10 @@ progress@^1.1.8:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/progress/-/progress-1.1.8.tgz#e260c78f6161cdd9b0e56cc3e0a85de17c7a57be"
 
+progress@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.0.tgz#8a1be366bf8fc23db2bd23f10c6fe920b4389d1f"
+
 promise@7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/promise/-/promise-7.1.1.tgz#489654c692616b8aa55b0724fa809bb7db49c5bf"
@@ -1285,6 +1291,12 @@ rechoir@^0.6.2:
 repeating@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/repeating/-/repeating-3.0.0.tgz#f4c376fdd2015761f6f96f4303b1224d581e802f"
+
+request-progress@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/request-progress/-/request-progress-3.0.0.tgz#4ca754081c7fec63f505e4faa825aa06cd669dbe"
+  dependencies:
+    throttleit "^1.0.0"
 
 request@2.74.0, request@^2.55.0:
   version "2.74.0"
@@ -1553,6 +1565,10 @@ temp@^0.8.3:
 text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
+
+throttleit@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/throttleit/-/throttleit-1.0.0.tgz#9e785836daf46743145a5984b6268d828528ac6c"
 
 through@^2.3.6:
   version "2.3.8"

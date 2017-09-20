@@ -22,7 +22,7 @@
     "colors": "^1.1.2",
     "cssstyle": "^0.2.37",
     "elm": "^0.18.0",
-    "elm-github-install": "^1.1.0",
+    "elm-github-install": "^1.6.0",
     "globby": "^6.1.0",
     "indent-string": "^3.0.0",
     "jsdom": "^9.9.1",
