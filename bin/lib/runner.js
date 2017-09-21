@@ -54,7 +54,6 @@ module.exports = (file, testId) => {
             if (!window.Elm) {
               console.log(`No Main found for: ${file}, exiting...`.red)
               process.exit(1)
-              window.close()
             } else {
               window.Elm.Main.embed(window.document.body)
               window._elmSpecReport = (results) => {
