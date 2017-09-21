@@ -5,7 +5,6 @@ module Spec.Runner exposing (..)
 @docs run, runWithProgram
 -}
 import Spec.Types exposing (Outcome(..), Assertion, Test, Node)
-import Spec.Reporter
 
 import Json.Encode as Json
 import Task
@@ -127,17 +126,8 @@ view model =
   let
     app =
       ( toString model.counter, Html.map App (model.view model.app) )
-
-    nodes =
-      if List.isEmpty model.tests then
-        [ app
-        , ( "report", Spec.Reporter.render model.finishedTests )
-        ]
-      else
-        [ app ]
-
   in
-    Html.Keyed.node "testing-node-123456" [] nodes
+    Html.Keyed.node "testing-node-123456" [] [ app ]
 
 
 {-| Runs the given tests without an app / component.
