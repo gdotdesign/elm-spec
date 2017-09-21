@@ -1,6 +1,7 @@
 # elm-spec
 [![Build Status](https://travis-ci.org/gdotdesign/elm-spec.svg?branch=master)](https://travis-ci.org/gdotdesign/elm-spec)
-[![npm version](https://badge.fury.io/js/elm-spec.svg)](https://badge.fury.io/js/elm-spec)
+[![Npm Version](https://badge.fury.io/js/elm-spec.svg)](https://badge.fury.io/js/elm-spec)
+[![Documentation](https://img.shields.io/badge/documentation-elm--directory-brightgreen.svg)](http://elm-directory.herokuapp.com/package/gdotdesign/elm-spec)
 
 End-to-end testing for your Elm apps and components.
 
@@ -12,7 +13,7 @@ End-to-end testing for your Elm apps and components.
 * Mock HTTP requests and report not mocked requests
 * `before` / `after` hooks
 * Run tests in the console (via _jsdom_)
-* Run tests with `elm-reactor` with HTML Report
+* Run tests with `elm-reactor` with console report
 * Run files one at a time `elm-spec spec/SomeSpec.elm`
 * Run tests one at a time `elm-spec spec/SomeSpec.elm:2`
 
@@ -26,8 +27,8 @@ elm-spec [glob pattern or file:testID] -f format
 
 Options:
   --format, -f  Reporting format
-               [choices: "documentation", "progress"] [default: "documentation"]
-  --help        Show help                                              [boolean]
+                [choices: "documentation", "progress"] [default: "documentation"]
+  --help        Show help                                               [boolean]
 
 ```
 
