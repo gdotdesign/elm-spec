@@ -3,25 +3,23 @@
 const pad = require('pad')
 
 class Reporter {
-  constructor (results) {
-    this.results = results
+  constructor () {
+    this.results = []
   }
 
-  get tree () {
+  testTree (file) {
     var tree = new Map()
+    var leaf = new Map()
 
-    this.results.forEach(file => {
-      var leaf = new Map()
-      tree.set('◎ ' + file.file, leaf)
+    tree.set('◎ ' + file.file, leaf)
 
-      file.tests.forEach(test => {
-        var endLeaf = test.path.reduce((memo, item) => {
-          if (!memo.has(item)) { memo.set(item, new Map()) }
-          return memo.get(item)
-        }, leaf)
+    file.tests.forEach(test => {
+      var endLeaf = test.path.reduce((memo, item) => {
+        if (!memo.has(item)) { memo.set(item, new Map()) }
+        return memo.get(item)
+      }, leaf)
 
-        endLeaf.set(test.id, test)
-      })
+      endLeaf.set(test.id, test)
     })
 
     return tree
@@ -33,16 +31,18 @@ class Reporter {
     }, [])
   }
 
-  get failedTests () {
-    return this.tests.filter(test => {
-      var failedSteps = test.results.filter(step => {
-        return step.outcome === 'fail' || step.outcome === 'error'
-      }).length
+  isFailedTest (test) {
+    var failedSteps = test.results.filter(step => {
+      return step.outcome === 'fail' || step.outcome === 'error'
+    }).length
 
-      return failedSteps > 0 ||
-             test.notMockedRequests.length > 0 ||
-             test.unhandledRequests.length > 0
-    })
+    return failedSteps > 0 ||
+           test.notMockedRequests.length > 0 ||
+           test.unhandledRequests.length > 0
+  }
+
+  get failedTests () {
+    return this.tests.filter(test => { return this.isFailedTest(test) })
   }
 
   get stepsCount () {

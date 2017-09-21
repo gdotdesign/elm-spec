@@ -64,9 +64,13 @@ class DocumentationReporter extends Reporter {
     return result.join('\n')
   }
 
-  report () {
-    console.log(this.reportMap(this.tree, true))
-    super.report()
+  reportFile (test) {
+    console.log(this.reportMap(this.testTree(test)) + '\n')
+    this.results.push(test)
+  }
+
+  reportResults () {
+    this.report()
   }
 }
 

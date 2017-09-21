@@ -87,11 +87,11 @@ specs : Node
 specs =
   let
     map key =
-      it "lays out children horizontally"
+      it ("handles property: " ++ key)
         [ assert.styleEquals
           { selector = "div"
-          , style = key
           , value = "none"
+          , style = key
           }
         ]
   in

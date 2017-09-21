@@ -34,13 +34,17 @@ if (argv._.length) {
 
 globby(glob).then(paths => {
   var Reporter = require(`./lib/${argv.f}-reporter`)
+  var reporter = new Reporter()
 
-  var files = paths.map(path => { return runner(path, id) })
+  async.eachSeries(paths,
+    (path, callback) => {
+      runner(path, id)((results) => {
+        reporter.reportFile(results)
+        callback()
+      })
+    }, (errors, allresults) => {
+      reporter.reportResults()
 
-  async.series(files, (errors, allresults) => {
-    var reporter = new Reporter(allresults)
-    reporter.report()
-
-    process.exit(reporter.exitCode)
-  })
+      process.exit(reporter.exitCode)
+    })
 })

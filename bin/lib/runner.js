@@ -1,10 +1,10 @@
 'use strict'
 
 const LocalStorage = require('node-localstorage').LocalStorage
+const jsdom = require('jsdom/lib/old-api.js')
 const indentString = require('indent-string')
 const elmMake = require('./elm-make')
 const temp = require('temp').track()
-const jsdom = require('jsdom')
 const fs = require('fs')
 
 require('colors')
@@ -57,7 +57,7 @@ module.exports = (file, testId) => {
             } else {
               window.Elm.Main.embed(window.document.body)
               window._elmSpecReport = (results) => {
-                callback(null, { file: file, tests: results })
+                callback({ file: file, tests: results }) // eslint-disable-line
               }
             }
           }

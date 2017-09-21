@@ -3,13 +3,19 @@
 const Reporter = require('./reporter')
 
 class ProgressReporter extends Reporter {
-  report () {
-    var dots = this.tests.map(test => {
-      return this.failedTests.indexOf(test) === -1 ? '.'.green : 'F'.red
+  reportFile (result) {
+    var dots = result.tests.map(test => {
+      return this.isFailedTest(test) ? 'F'.red : '.'.green
     })
 
-    console.log(dots.join('') + '\n')
-    super.report()
+    process.stdout.write(dots.join(''))
+
+    this.results.push(result)
+  }
+
+  reportResults () {
+    console.log('\n')
+    this.report()
   }
 }
 
