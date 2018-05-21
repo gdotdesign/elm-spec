@@ -37,7 +37,7 @@ Add `gdotdesign/elm-spec` as a dependency to your `elm-package.json`.
 
 ```json
   "dependencies": {
-    "gdotdesign/elm-spec": "1.0.0 <= v 2.0.0"
+    "gdotdesign/elm-spec": "1.0.0 <= v < 2.0.0"
   }
 ```
 
